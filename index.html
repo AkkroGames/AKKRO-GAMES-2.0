@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Akkro Games - Moon Night</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+  <!-- Star Background -->
+  <div class="stars" id="stars-container"></div>
+  
+  <!-- Floating Asteroids -->
+  <div id="asteroids-container"></div>
+  
+  <!-- Loader -->
+  <div id="loader-bg">
+    <div class="moon-loader"></div>
+    <div class="loading-text" id="loading-text">Loading lunar adventure...</div>
+  </div>
+  
+  <div class="navbar">
+    <span class="logo" id="moon-logo">
+      <span class="moon-icon">🌑</span>
+      Akkro Games
+      <span class="logo-hint" id="logo-hint"></span>
+    </span>
+    
+    <div class="language-switcher">
+      <button class="language-btn active" data-lang="en">
+        <i class="fas fa-globe"></i>
+        EN
+      </button>
+      <button class="language-btn" data-lang="ru">
+        <i class="fas fa-globe"></i>
+        RU
+      </button>
+      <button class="language-btn" data-lang="es">
+        <i class="fas fa-globe"></i>
+        ES
+      </button>
+    </div>
+    
+    <div class="account-section">
+      <button class="account-btn" id="account-btn" title="Account">
+        <i class="fas fa-user"></i>
+      </button>
+      <div class="account-menu" id="account-menu">
+        <div class="account-info">
+          <div class="account-avatar" id="account-avatar">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="account-details">
+            <div class="account-username" id="account-username">Guest</div>
+            <div class="account-email" id="account-email">Enter your account</div>
+            <div id="premium-badge" style="display: none;">
+              <span class="account-premium-badge">PREMIUM</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="account-stats">
+          <div class="account-stat">
+            <div class="account-stat-value" id="stat-diamonds">0</div>
+            <div class="account-stat-label">Diamonds</div>
+          </div>
+          <div class="account-stat">
+            <div class="account-stat-value" id="stat-achievements">0</div>
+            <div class="account-stat-label">Achievements</div>
+          </div>
+        </div>
+        
+        <div class="account-actions" id="account-actions">
+          <button class="account-action-btn" id="login-action-btn">
+            <i class="fas fa-sign-in-alt"></i>
+            Login
+          </button>
+          <button class="account-action-btn" id="register-action-btn">
+            <i class="fas fa-user-plus"></i>
+            Register
+          </button>
+        </div>
+        <div class="account-actions" id="user-actions" style="display: none;">
+          <button class="account-action-btn" id="profile-action-btn">
+            <i class="fas fa-user-circle"></i>
+            Profile
+          </button>
+          <button class="account-action-btn" id="premium-action-btn">
+            <i class="fas fa-crown"></i>
+            Premium
+          </button>
+          <button class="account-action-btn" id="logout-action-btn">
+            <i class="fas fa-sign-out-alt"></i>
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Auth Modal -->
+  <div class="achievements-page" id="auth-page" style="display:none;">
+    <div class="auth-form-container">
+      <button class="achieve-close" id="auth-close" title="Close">×</button>
+      
+      <div class="auth-header">
+        <h2 class="auth-title">Welcome</h2>
+        <p class="auth-subtitle">Join the lunar adventure</p>
+      </div>
+      
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="login-tab">Login</button>
+        <button class="auth-tab" id="register-tab">Register</button>
+      </div>
+      
+      <form class="auth-form active" id="login-form">
+        <div class="form-group">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="Enter password" required>
+          <button type="button" class="password-toggle" id="login-password-toggle">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <button type="submit" class="auth-submit-btn">Login to Account</button>
+        
+        <div class="auth-divider">
+          <span>or login with</span>
+        </div>
+        
+        <div class="social-auth">
+          <button type="button" class="google-auth-btn" id="google-login-btn">
+            <i class="fab fa-google"></i>
+            Login with Google
+          </button>
+        </div>
+      </form>
+      
+      <form class="auth-form" id="register-form">
+        <div class="form-group">
+          <label for="register-username">Username</label>
+          <input type="text" id="register-username" placeholder="Create username" required>
+        </div>
+        <div class="form-group">
+          <label for="register-email">Email</label>
+          <input type="email" id="register-email" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+          <label for="register-password">Password</label>
+          <input type="password" id="register-password" placeholder="Create password" required>
+          <button type="button" class="password-toggle" id="register-password-toggle">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="form-group">
+          <label for="register-confirm">Confirm Password</label>
+          <input type="password" id="register-confirm" placeholder="Repeat password" required>
+        </div>
+        <button type="submit" class="auth-submit-btn">Create Account</button>
+        
+        <div class="auth-divider">
+          <span>or register with</span>
+        </div>
+        
+        <div class="social-auth">
+          <button type="button" class="google-auth-btn" id="google-register-btn">
+            <i class="fab fa-google"></i>
+            Register with Google
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <section class="hero" id="main-hero">
+    <div class="hero-bg"></div>
+    <h1 id="hero-title">Welcome to Akkro Games</h1>
+    <p id="hero-subtitle">The best games under moonlight - for you! Experience the magic and find surprises 🌑✨</p>
+    
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-value" id="hero-games">3+</div>
+        <div class="hero-stat-label" id="hero-games-label">Available Games</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-value" id="hero-players">1.2K+</div>
+        <div class="hero-stat-label" id="hero-players-label">Active Players</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-value" id="hero-achievements">15+</div>
+        <div class="hero-stat-label" id="hero-achievements-label">Total Achievements</div>
+      </div>
+    </div>
+  </section>
+  
+  <section class="games-section">
+    <div class="section-header">
+      <h2 class="section-title" id="games-title">Our Games</h2>
+      <p class="section-subtitle" id="games-subtitle">Choose a game and embark on a space adventure</p>
+    </div>
+    <div class="games-list" id="games-list"></div>
+  </section>
+  
+  <footer>
+    <div class="footer-content">
+      <div class="footer-links">
+        <a href="#" class="footer-link" id="about-link">About Us</a>
+        <a href="#" class="footer-link" id="support-link">Support</a>
+        <a href="#" class="footer-link" id="privacy-link">Privacy Policy</a>
+        <a href="#" class="footer-link" id="terms-link">Terms of Use</a>
+        <a href="#" class="footer-link" id="contacts-link">Contacts</a>
+      </div>
+      <span class="version" id="version-text">Site Version: v4.1.0</span>
+      <button class="achieve-btn" id="achieve-btn" title="Achievements">🏆</button>
+      <span class="diamond-counter" id="diamond-counter">💎 0</span>
+      <button class="shop-btn" id="shop-btn" style="margin-left:1em;">Change Design</button>
+      <button class="promo-btn" id="promo-btn">Promocodes</button>
+    </div>
+  </footer>
+  
+  <div class="achievements-page" id="achievements-page" style="display:none;">
+    <div class="achievements-inner">
+      <button class="achieve-close" id="achieve-close" title="Close achievements">×</button>
+      <h2 style="color:#fff; font-size: 2.5rem; margin-bottom: 1rem;" id="achievements-title">Achievements</h2>
+      <p style="color: var(--moon-grey); margin-bottom: 2rem;" id="achievements-subtitle">Earn achievements and get rewards</p>
+      <div class="achieve-list" id="achieve-list"></div>
+    </div>
+  </div>
+  
+  <div class="achievements-page" id="shop-page" style="display:none;">
+    <div class="achievements-inner">
+      <button class="achieve-close" id="shop-close" title="Close shop">×</button>
+      <h2 style="color:#fff; font-size: 2.5rem; margin-bottom: 1rem;" id="shop-title">Design Shop</h2>
+      <p style="color: var(--moon-grey); margin-bottom: 2rem;" id="shop-subtitle">Change the appearance of the site with unique themes</p>
+      <div class="shop-designs" id="shop-designs"></div>
+    </div>
+  </div>
+
+  <!-- Promocodes Page -->
+  <div class="achievements-page" id="promo-page" style="display:none;">
+    <div class="promo-form-container">
+      <button class="achieve-close" id="promo-close" title="Close promocodes">×</button>
+      
+      <div class="promo-header">
+        <h2 class="promo-title" id="promo-title">Promocodes</h2>
+        <p class="promo-subtitle" id="promo-subtitle">Enter promocode to get free diamonds</p>
+      </div>
+      
+      <div class="promo-input-group">
+        <input type="text" class="promo-input" id="promo-input" placeholder="Enter promocode" maxlength="20">
+      </div>
+      
+      <button class="promo-submit-btn" id="promo-submit-btn">Activate Promocode</button>
+      
+      <div class="social-promo-section">
+        <h3 class="social-promo-title" id="social-promo-title">Find active promocodes in our social networks</h3>
+        <p class="social-promo-description" id="social-promo-description">Join our community to get exclusive promocodes, participate in giveaways and be the first to know about new games and updates!</p>
+        
+        <div class="social-promo-buttons">
+          <a href="https://t.me/akkrogames" target="_blank" class="social-promo-btn telegram">
+            <i class="fab fa-telegram"></i>
+            <span id="telegram-btn-text">Telegram Channel</span>
+          </a>
+          <a href="https://discord.gg/akkrogames" target="_blank" class="social-promo-btn discord">
+            <i class="fab fa-discord"></i>
+            <span id="discord-btn-text">Discord Server</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Info Pages -->
+  <div class="info-page" id="about-page" style="display:none;">
+    <div class="info-inner">
+      <button class="info-close" id="about-close" title="Close">×</button>
+      <h2 class="info-title" id="about-title">About Us</h2>
+      <div class="info-content" id="about-content">
+        <p>Welcome to Akkro Games - an innovative game studio creating unique gaming experiences for millions of players worldwide!</p>
+        
+        <p>Our team consists of talented developers, designers, and game designers who put their soul into every project. We strive to create games that not only entertain but also inspire, unite people, and leave unforgettable impressions.</p>
+        
+        <p>Founded in 2020, Akkro Games quickly gained recognition thanks to our unique approach to game development. We combine cutting-edge technologies with creative design to create products that stand out in the market.</p>
+        
+        <p>Our philosophy is simple: players always come first. We listen to our community's feedback and constantly work on improving our games to provide the best gaming experience.</p>
+        
+        <p>Among our projects, you'll find diverse genres - from exciting space adventures to complex puzzles. Each game is created with love and attention to detail.</p>
+        
+        <p>Join our growing community and discover the world of amazing gaming adventures from Akkro Games!</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="info-page" id="support-page" style="display:none;">
+    <div class="info-inner">
+      <button class="info-close" id="support-close" title="Close">×</button>
+      <h2 class="info-title" id="support-title">Support</h2>
+      <div class="info-content" id="support-content">
+        <p>We are always ready to help you with any questions or problems you may encounter when using our games or website.</p>
+        
+        <p>If you have technical issues, questions about gameplay, or suggestions for improvement, our support team is ready to assist you.</p>
+        
+        <p>Contact us by email:</p>
+        
+        <span class="email-address">akkrogames7@gmail.com</span>
+        
+        <p>We strive to respond to all requests within 24 hours. Please provide as much information about your problem as possible so we can help you faster.</p>
+        
+        <p>You can also find answers to frequently asked questions in our "Help" section or join our community on social media where other players can share their experiences.</p>
+        
+        <a href="mailto:akkrogames7@gmail.com" class="email-btn">Contact Support</a>
+      </div>
+    </div>
+  </div>
+  
+  <div class="info-page" id="privacy-page" style="display:none;">
+    <div class="info-inner">
+      <button class="info-close" id="privacy-close" title="Close">×</button>
+      <h2 class="info-title" id="privacy-title">Privacy Policy</h2>
+      <div class="info-content" id="privacy-content">
+        <p>Last updated: January 1, 2024</p>
+        
+        <p>At Akkro Games, we take our users' privacy seriously. This Privacy Policy describes how we collect, use, and protect your personal information.</p>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Information Collected</h3>
+        <p>We may collect the following information:</p>
+        <ul style="padding-left: 1.5rem;">
+          <li>Account information (username, email)</li>
+          <li>Game statistics and progress</li>
+          <li>Technical information (device type, OS version)</li>
+          <li>Usage data of our services</li>
+        </ul>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Use of Information</h3>
+        <p>We use collected information for:</p>
+        <ul style="padding-left: 1.5rem;">
+          <li>Providing and improving our services</li>
+          <li>Personalizing gaming experience</li>
+          <li>Processing transactions</li>
+          <li>Sending important notifications</li>
+        </ul>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Information Protection</h3>
+        <p>We take reasonable measures to protect your personal information from unauthorized access, alteration, disclosure, or destruction.</p>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Cookies</h3>
+        <p>We use cookies and similar technologies to track activity on our website and store certain information.</p>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Policy Changes</h3>
+        <p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page.</p>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Contact Us</h3>
+        <p>If you have questions about our Privacy Policy, please contact us: akkrogames7@gmail.com</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="info-page" id="terms-page" style="display:none;">
+    <div class="info-inner">
+      <button class="info-close" id="terms-close" title="Close">×</button>
+      <h2 class="info-title" id="terms-title">Terms of Use</h2>
+      <div class="info-content" id="terms-content">
+        <p>Welcome to Akkro Games! By using our games and website, you agree to these Terms of Use.</p>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Respectful Use</h3>
+        <p>We encourage all users to respect our work and other players. This website and all games were created with great love and soul investment by our development team.</p>
+        
+        <p style="background: rgba(139, 182, 249, 0.1); padding: 1.5rem; border-radius: 12px; border-left: 4px solid var(--accent);">
+          <strong>Special request:</strong><br>
+          Please do not attempt to conduct DDoS attacks on our website, do not hack our systems, and do not use cheats in games. Such actions not only disrupt the service for other users but also harm our team, which has invested a lot of time and effort into creating this project.
+        </p>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Code of Conduct</h3>
+        <p>When using our services, you agree:</p>
+        <ul style="padding-left: 1.5rem;">
+          <li>Not to disrupt the operation of our services</li>
+          <li>Not to use exploits, cheats, or mods that provide unfair advantage</li>
+          <li>Not to conduct any form of cyber attacks on our infrastructure</li>
+          <li>To respect other players and members of our team</li>
+          <li>To comply with all applicable laws and regulations</li>
+        </ul>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Intellectual Property</h3>
+        <p>All games, content, graphics, code, and other materials on this site are the intellectual property of Akkro Games and are protected by copyright laws.</p>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Access Termination</h3>
+        <p>We reserve the right to restrict or terminate your access to our services in case of violation of these Terms of Use.</p>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Terms Changes</h3>
+        <p>We may update these Terms of Use from time to time. By continuing to use our services after such changes, you agree to the revised terms.</p>
+        
+        <p>Thank you for your understanding and respectful attitude towards our work!</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="info-page" id="contacts-page" style="display:none;">
+    <div class="info-inner">
+      <button class="info-close" id="contacts-close" title="Close">×</button>
+      <h2 class="info-title" id="contacts-title">Contacts</h2>
+      <div class="info-content" id="contacts-content">
+        <p>We're always happy to hear from our players! If you have questions, suggestions, or just want to share your opinion about our games, don't hesitate to contact us.</p>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Email</h3>
+        <p>For all questions related to our games, technical support, cooperation, or media inquiries, you can write to us:</p>
+        
+        <span class="email-address">akkrogames7@gmail.com</span>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Social Media</h3>
+        <p>Follow our updates and join the Akkro Games community on social media:</p>
+        <ul style="padding-left: 1.5rem;">
+          <li>Twitter: @AkkroGames</li>
+          <li>Instagram: @akkrogames</li>
+          <li>Discord: Our community server</li>
+        </ul>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Response Time</h3>
+        <p>We strive to respond to all messages within 24-48 hours. For urgent questions, please indicate "URGENT" in the subject line.</p>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Cooperation</h3>
+        <p>If you're interested in cooperating with Akkro Games (partnership, publishing, media), please indicate "COOPERATION" in the subject line.</p>
+        
+        <a href="mailto:akkrogames7@gmail.com" class="email-btn">Contact Us</a>
+      </div>
+    </div>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>
