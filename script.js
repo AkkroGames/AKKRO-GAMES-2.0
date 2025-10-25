@@ -200,7 +200,7 @@ const translations = {
     
     // Games section
     games: "Nuestros Juegos",
-    gamesSubtitle: "Elige un juego y embárcate en una aventura espacial",
+    gamesSubtitle: "Elige un juego и embárcate en una aventura espacial",
     playNow: "Jugar Ahora",
     inDevelopment: "En Desarrollo",
     version: "Versión del Sitio",
@@ -535,6 +535,172 @@ function initializeUI() {
   
   // Start active players tracking
   startActivePlayersTracking();
+  
+  // Initialize server connection
+  initializeServerConnection();
+}
+
+// ===== SERVER CONNECTION SYSTEM =====
+let serverConnection = null;
+let isConnectedToServer = false;
+
+function initializeServerConnection() {
+  // In a real implementation, this would connect to a GitHub server or WebSocket
+  // For this demo, we'll simulate server connection using localStorage as a shared state
+  
+  // Check if we're already connected
+  if (localStorage.getItem('akkro_server_connected') === 'true') {
+    isConnectedToServer = true;
+    console.log('Connected to server');
+  } else {
+    // Simulate server connection
+    setTimeout(() => {
+      localStorage.setItem('akkro_server_connected', 'true');
+      isConnectedToServer = true;
+      console.log('Successfully connected to server');
+    }, 1000);
+  }
+  
+  // Listen for server events (simulated with localStorage events)
+  window.addEventListener('storage', handleServerEvent);
+  
+  // Also listen for custom events for same-tab communication
+  window.addEventListener('akkroServerEvent', handleCustomServerEvent);
+}
+
+function handleServerEvent(event) {
+  if (event.key && event.key.startsWith('akkro_server_')) {
+    try {
+      const data = JSON.parse(event.newValue);
+      processServerCommand(data);
+    } catch (e) {
+      console.error('Error processing server event:', e);
+    }
+  }
+}
+
+function handleCustomServerEvent(event) {
+  processServerCommand(event.detail);
+}
+
+function processServerCommand(data) {
+  if (!data || !data.command) return;
+  
+  console.log('Processing server command:', data.command);
+  
+  switch (data.command) {
+    case 'global_notification':
+      showGlobalNotification(data.message);
+      break;
+    case 'give_diamonds':
+      if (data.amount) {
+        setDiamonds(getDiamonds() + data.amount);
+        showNotification(`Admin gave you ${data.amount} diamonds!`, 'success');
+      }
+      break;
+    case 'start_timer':
+      if (data.duration) {
+        startSiteTimer(data.duration);
+      }
+      break;
+    case 'start_global_timer':
+      if (data.duration) {
+        startGlobalTimer(data.duration);
+      }
+      break;
+    case 'beta_test_animation':
+      startBetaTestAnimation();
+      break;
+    case 'confetti_animation':
+      startConfettiAnimation();
+      break;
+    case 'fireworks_animation':
+      startFireworksAnimation();
+      break;
+    case 'rainbow_text':
+      startRainbowTextAnimation();
+      break;
+    case 'pulse_effect':
+      startPulseEffect();
+      break;
+    case 'shake_effect':
+      startShakeEffect();
+      break;
+    case 'spin_effect':
+      startSpinEffect();
+      break;
+    case 'bounce_effect':
+      startBounceEffect();
+      break;
+    case 'flip_effect':
+      startFlipEffect();
+      break;
+    case 'zoom_effect':
+      startZoomEffect();
+      break;
+    case 'slide_in_effect':
+      startSlideInEffect();
+      break;
+    case 'fade_in_effect':
+      startFadeInEffect();
+      break;
+    case 'glitch_effect':
+      startGlitchEffect();
+      break;
+    case 'neon_effect':
+      startNeonEffect();
+      break;
+    case 'typing_effect':
+      startTypingEffect();
+      break;
+    case 'float_effect':
+      startFloatEffect();
+      break;
+    case 'jello_effect':
+      startJelloEffect();
+      break;
+    case 'wobble_effect':
+      startWobbleEffect();
+      break;
+    case 'heartbeat_effect':
+      startHeartbeatEffect();
+      break;
+    case 'rubberBand_effect':
+      startRubberBandEffect();
+      break;
+    case 'tada_effect':
+      startTadaEffect();
+      break;
+    case 'flash_effect':
+      startFlashEffect();
+      break;
+    default:
+      console.log('Unknown server command:', data.command);
+  }
+}
+
+function sendServerCommand(command, data = {}) {
+  if (!isConnectedToServer) {
+    console.warn('Not connected to server');
+    return false;
+  }
+  
+  const commandData = {
+    command,
+    timestamp: Date.now(),
+    ...data
+  };
+  
+  // In a real implementation, this would send data to the server
+  // For this demo, we'll use localStorage to simulate server communication
+  
+  // Store command in localStorage to trigger storage event in other tabs
+  localStorage.setItem(`akkro_server_${Date.now()}`, JSON.stringify(commandData));
+  
+  // Also trigger custom event for same-tab communication
+  window.dispatchEvent(new CustomEvent('akkroServerEvent', { detail: commandData }));
+  
+  return true;
 }
 
 // ===== ACTIVE PLAYERS SYSTEM =====
@@ -587,7 +753,7 @@ function cleanUpOldSessions() {
 const games = [
   { 
     title: "Space Runner", 
-    path: "games/game1/index.html", 
+    path: "https://akkrogames.github.io/AkkroGame1/", 
     version: "v1.2.5",
     description: "Run across space platforms and collect stars in this exciting arcade",
     icon: "🚀",
@@ -1378,10 +1544,34 @@ const adminPage = document.getElementById('admin-page');
 const adminClose = document.getElementById('admin-close');
 const give3DiamondsBtn = document.getElementById('give-3-diamonds');
 const give1DiamondBtn = document.getElementById('give-1-diamond');
+const betaTestBtn = document.getElementById('beta-test-btn');
+const confettiBtn = document.getElementById('confetti-btn');
+const fireworksBtn = document.getElementById('fireworks-btn');
+const rainbowTextBtn = document.getElementById('rainbow-text-btn');
+const pulseEffectBtn = document.getElementById('pulse-effect-btn');
+const shakeEffectBtn = document.getElementById('shake-effect-btn');
+const spinEffectBtn = document.getElementById('spin-effect-btn');
+const bounceEffectBtn = document.getElementById('bounce-effect-btn');
+const flipEffectBtn = document.getElementById('flip-effect-btn');
+const zoomEffectBtn = document.getElementById('zoom-effect-btn');
+const slideInEffectBtn = document.getElementById('slide-in-effect-btn');
+const fadeInEffectBtn = document.getElementById('fade-in-effect-btn');
+const glitchEffectBtn = document.getElementById('glitch-effect-btn');
+const neonEffectBtn = document.getElementById('neon-effect-btn');
+const typingEffectBtn = document.getElementById('typing-effect-btn');
+const floatEffectBtn = document.getElementById('float-effect-btn');
+const jelloEffectBtn = document.getElementById('jello-effect-btn');
+const wobbleEffectBtn = document.getElementById('wobble-effect-btn');
+const heartbeatEffectBtn = document.getElementById('heartbeat-effect-btn');
+const rubberBandEffectBtn = document.getElementById('rubberBand-effect-btn');
+const tadaEffectBtn = document.getElementById('tada-effect-btn');
+const flashEffectBtn = document.getElementById('flash-effect-btn');
 const globalMessageInput = document.getElementById('global-message-input');
 const sendGlobalMessageBtn = document.getElementById('send-global-message');
 const timerInput = document.getElementById('timer-input');
 const startTimerBtn = document.getElementById('start-timer');
+const globalTimerInput = document.getElementById('global-timer-input');
+const startGlobalTimerBtn = document.getElementById('start-global-timer');
 const playersList = document.getElementById('players-list');
 
 function showAdminPanel() {
@@ -1494,6 +1684,10 @@ function giveDiamondsToAll(amount) {
   });
   
   localStorage.setItem('akkro_users', JSON.stringify(users));
+  
+  // Send server command to give diamonds to all players
+  sendServerCommand('give_diamonds', { amount });
+  
   showNotification(`Gave ${amount} diamonds to all players!`, 'success');
 }
 
@@ -1503,6 +1697,9 @@ function sendGlobalMessage() {
     showNotification('Please enter a message', 'error');
     return;
   }
+  
+  // Send server command to show global message
+  sendServerCommand('global_notification', { message });
   
   // Show the message to all users (in a real app, this would be sent to a server)
   showGlobalNotification(message);
@@ -1526,7 +1723,15 @@ function startTimer() {
     return;
   }
   
+  // Send server command to start timer
+  sendServerCommand('start_timer', { duration: seconds });
+  
   // Show timer
+  startSiteTimer(seconds);
+  timerInput.value = '';
+}
+
+function startSiteTimer(seconds) {
   const timerElement = document.getElementById('site-timer');
   timerElement.style.display = 'block';
   
@@ -1552,8 +1757,111 @@ function startTimer() {
     
     timeLeft--;
   }, 1000);
+}
+
+function startGlobalTimer() {
+  const seconds = parseInt(globalTimerInput.value);
+  if (isNaN(seconds) || seconds <= 0) {
+    showNotification('Please enter a valid number of seconds', 'error');
+    return;
+  }
   
-  timerInput.value = '';
+  // Send server command to start global timer
+  sendServerCommand('start_global_timer', { duration: seconds });
+  
+  // Start global timer for all users
+  startGlobalTimerForAll(seconds);
+  globalTimerInput.value = '';
+}
+
+function startGlobalTimerForAll(seconds) {
+  const globalTimer = document.getElementById('global-timer');
+  globalTimer.style.display = 'block';
+  
+  let timeLeft = seconds;
+  
+  const timerInterval = setInterval(() => {
+    globalTimer.textContent = formatTime(timeLeft);
+    
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      globalTimer.classList.add('global-timer-expired');
+      globalTimer.textContent = 'TIME\'S UP!';
+      
+      // Start beta test animation after timer expires
+      setTimeout(() => {
+        startBetaTestAnimation();
+      }, 2000);
+      
+      // Hide timer after animation
+      setTimeout(() => {
+        globalTimer.style.display = 'none';
+        globalTimer.classList.remove('global-timer-expired');
+      }, 15000);
+    }
+    
+    timeLeft--;
+  }, 1000);
+}
+
+function startBetaTestAnimation() {
+  // Send server command to start beta test animation
+  sendServerCommand('beta_test_animation');
+  
+  // Start the animation for all users
+  startBetaTestAnimationForAll();
+}
+
+function startBetaTestAnimationForAll() {
+  // Phase 1: Mild lag effect (5 seconds)
+  const lagEffect = document.getElementById('lag-effect');
+  lagEffect.style.display = 'block';
+  
+  setTimeout(() => {
+    // Phase 2: Stronger lag effect (5 seconds)
+    document.body.style.animation = 'shake 0.1s infinite';
+    
+    setTimeout(() => {
+      // Phase 3: Blue screen (3 seconds)
+      document.body.style.animation = '';
+      lagEffect.style.display = 'none';
+      
+      const blueScreen = document.getElementById('blue-screen');
+      const blueScreenText = document.getElementById('blue-screen-text');
+      blueScreen.style.display = 'flex';
+      
+      // Show error messages
+      const errorMessages = [
+        "SYSTEM ERROR: 0x0000001A",
+        "MEMORY_MANAGEMENT",
+        "PAGE_FAULT_IN_NONPAGED_AREA",
+        "Attempting system recovery...",
+        "Recovery failed. Initializing beta test mode..."
+      ];
+      
+      let currentMessage = 0;
+      const messageInterval = setInterval(() => {
+        if (currentMessage < errorMessages.length) {
+          blueScreenText.textContent = errorMessages[currentMessage];
+          currentMessage++;
+        } else {
+          clearInterval(messageInterval);
+        }
+      }, 600);
+      
+      setTimeout(() => {
+        // Phase 4: Beta test welcome screen
+        blueScreen.style.display = 'none';
+        const betaTestOverlay = document.getElementById('beta-test-overlay');
+        betaTestOverlay.style.display = 'flex';
+        
+        setTimeout(() => {
+          // End animation after 3 seconds
+          betaTestOverlay.style.display = 'none';
+        }, 3000);
+      }, 3000);
+    }, 5000);
+  }, 5000);
 }
 
 function formatTime(seconds) {
@@ -1600,6 +1908,464 @@ function createMeteor() {
   }, duration * 1000);
 }
 
+// ===== NEW ANIMATION FUNCTIONS =====
+function startConfettiAnimation() {
+  // Send server command to start confetti animation
+  sendServerCommand('confetti_animation');
+  
+  // Start confetti animation for all users
+  startConfettiAnimationForAll();
+}
+
+function startConfettiAnimationForAll() {
+  const confettiContainer = document.getElementById('confetti-container');
+  confettiContainer.style.display = 'block';
+  
+  // Create confetti
+  for (let i = 0; i < 150; i++) {
+    setTimeout(() => {
+      createConfetti();
+    }, i * 20);
+  }
+  
+  // Clear confetti after animation
+  setTimeout(() => {
+    confettiContainer.innerHTML = '';
+    confettiContainer.style.display = 'none';
+  }, 5000);
+}
+
+function createConfetti() {
+  const confettiContainer = document.getElementById('confetti-container');
+  const confetti = document.createElement('div');
+  confetti.className = 'confetti';
+  
+  // Random position, color and animation
+  const startX = Math.random() * 100;
+  const duration = 3 + Math.random() * 2;
+  const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+  const color = colors[Math.floor(Math.random() * colors.length)];
+  
+  confetti.style.left = `${startX}%`;
+  confetti.style.animationDuration = `${duration}s`;
+  confetti.style.backgroundColor = color;
+  
+  confettiContainer.appendChild(confetti);
+  
+  // Remove confetti after animation
+  setTimeout(() => {
+    if (confetti.parentNode === confettiContainer) {
+      confettiContainer.removeChild(confetti);
+    }
+  }, duration * 1000);
+}
+
+function startFireworksAnimation() {
+  // Send server command to start fireworks animation
+  sendServerCommand('fireworks_animation');
+  
+  // Start fireworks animation for all users
+  startFireworksAnimationForAll();
+}
+
+function startFireworksAnimationForAll() {
+  const fireworksContainer = document.getElementById('fireworks-container');
+  fireworksContainer.style.display = 'block';
+  
+  // Create fireworks
+  for (let i = 0; i < 10; i++) {
+    setTimeout(() => {
+      createFirework();
+    }, i * 500);
+  }
+  
+  // Clear fireworks after animation
+  setTimeout(() => {
+    fireworksContainer.innerHTML = '';
+    fireworksContainer.style.display = 'none';
+  }, 6000);
+}
+
+function createFirework() {
+  const fireworksContainer = document.getElementById('fireworks-container');
+  const fireworkCount = 30;
+  const startX = Math.random() * 80 + 10;
+  const startY = Math.random() * 50 + 10;
+  const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+  
+  for (let i = 0; i < fireworkCount; i++) {
+    const firework = document.createElement('div');
+    firework.className = 'firework';
+    
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const angle = (i / fireworkCount) * 2 * Math.PI;
+    const distance = 50 + Math.random() * 100;
+    const endX = startX + Math.cos(angle) * distance;
+    const endY = startY + Math.sin(angle) * distance;
+    
+    firework.style.setProperty('--startX', `${startX}%`);
+    firework.style.setProperty('--startY', `${startY}%`);
+    firework.style.setProperty('--endX', `${endX}%`);
+    firework.style.setProperty('--endY', `${endY}%`);
+    firework.style.backgroundColor = color;
+    
+    fireworksContainer.appendChild(firework);
+    
+    // Remove firework after animation
+    setTimeout(() => {
+      if (firework.parentNode === fireworksContainer) {
+        fireworksContainer.removeChild(firework);
+      }
+    }, 2000);
+  }
+}
+
+function startRainbowTextAnimation() {
+  // Send server command to start rainbow text animation
+  sendServerCommand('rainbow_text');
+  
+  // Start rainbow text animation for all users
+  startRainbowTextAnimationForAll();
+}
+
+function startRainbowTextAnimationForAll() {
+  const heroTitle = document.getElementById('hero-title');
+  heroTitle.classList.add('rainbow-text');
+  
+  setTimeout(() => {
+    heroTitle.classList.remove('rainbow-text');
+  }, 5000);
+}
+
+function startPulseEffect() {
+  // Send server command to start pulse effect
+  sendServerCommand('pulse_effect');
+  
+  // Start pulse effect for all users
+  startPulseEffectForAll();
+}
+
+function startPulseEffectForAll() {
+  const moonLogo = document.getElementById('moon-logo');
+  moonLogo.classList.add('pulse-effect');
+  
+  setTimeout(() => {
+    moonLogo.classList.remove('pulse-effect');
+  }, 2000);
+}
+
+function startShakeEffect() {
+  // Send server command to start shake effect
+  sendServerCommand('shake_effect');
+  
+  // Start shake effect for all users
+  startShakeEffectForAll();
+}
+
+function startShakeEffectForAll() {
+  const navbar = document.querySelector('.navbar');
+  navbar.classList.add('shake-effect');
+  
+  setTimeout(() => {
+    navbar.classList.remove('shake-effect');
+  }, 500);
+}
+
+function startSpinEffect() {
+  // Send server command to start spin effect
+  sendServerCommand('spin_effect');
+  
+  // Start spin effect for all users
+  startSpinEffectForAll();
+}
+
+function startSpinEffectForAll() {
+  const moonIcon = document.querySelector('.moon-icon');
+  moonIcon.classList.add('spin-effect');
+  
+  setTimeout(() => {
+    moonIcon.classList.remove('spin-effect');
+  }, 1000);
+}
+
+function startBounceEffect() {
+  // Send server command to start bounce effect
+  sendServerCommand('bounce_effect');
+  
+  // Start bounce effect for all users
+  startBounceEffectForAll();
+}
+
+function startBounceEffectForAll() {
+  const achieveBtn = document.getElementById('achieve-btn');
+  achieveBtn.classList.add('bounce-effect');
+  
+  setTimeout(() => {
+    achieveBtn.classList.remove('bounce-effect');
+  }, 1000);
+}
+
+function startFlipEffect() {
+  // Send server command to start flip effect
+  sendServerCommand('flip_effect');
+  
+  // Start flip effect for all users
+  startFlipEffectForAll();
+}
+
+function startFlipEffectForAll() {
+  const gameCards = document.querySelectorAll('.game-card');
+  gameCards.forEach(card => {
+    card.classList.add('flip-effect');
+  });
+  
+  setTimeout(() => {
+    gameCards.forEach(card => {
+      card.classList.remove('flip-effect');
+    });
+  }, 1000);
+}
+
+function startZoomEffect() {
+  // Send server command to start zoom effect
+  sendServerCommand('zoom_effect');
+  
+  // Start zoom effect for all users
+  startZoomEffectForAll();
+}
+
+function startZoomEffectForAll() {
+  const heroSection = document.getElementById('main-hero');
+  heroSection.classList.add('zoom-effect');
+  
+  setTimeout(() => {
+    heroSection.classList.remove('zoom-effect');
+  }, 1000);
+}
+
+function startSlideInEffect() {
+  // Send server command to start slide in effect
+  sendServerCommand('slide_in_effect');
+  
+  // Start slide in effect for all users
+  startSlideInEffectForAll();
+}
+
+function startSlideInEffectForAll() {
+  const gamesSection = document.querySelector('.games-section');
+  gamesSection.classList.add('slide-in-effect');
+  
+  setTimeout(() => {
+    gamesSection.classList.remove('slide-in-effect');
+  }, 1000);
+}
+
+function startFadeInEffect() {
+  // Send server command to start fade in effect
+  sendServerCommand('fade_in_effect');
+  
+  // Start fade in effect for all users
+  startFadeInEffectForAll();
+}
+
+function startFadeInEffectForAll() {
+  const footer = document.querySelector('footer');
+  footer.classList.add('fade-in-effect');
+  
+  setTimeout(() => {
+    footer.classList.remove('fade-in-effect');
+  }, 1000);
+}
+
+function startGlitchEffect() {
+  // Send server command to start glitch effect
+  sendServerCommand('glitch_effect');
+  
+  // Start glitch effect for all users
+  startGlitchEffectForAll();
+}
+
+function startGlitchEffectForAll() {
+  const heroTitle = document.getElementById('hero-title');
+  heroTitle.classList.add('glitch-effect');
+  
+  setTimeout(() => {
+    heroTitle.classList.remove('glitch-effect');
+  }, 300);
+}
+
+function startNeonEffect() {
+  // Send server command to start neon effect
+  sendServerCommand('neon_effect');
+  
+  // Start neon effect for all users
+  startNeonEffectForAll();
+}
+
+function startNeonEffectForAll() {
+  const sectionTitles = document.querySelectorAll('.section-title');
+  sectionTitles.forEach(title => {
+    title.classList.add('neon-effect');
+  });
+  
+  setTimeout(() => {
+    sectionTitles.forEach(title => {
+      title.classList.remove('neon-effect');
+    });
+  }, 1500);
+}
+
+function startTypingEffect() {
+  // Send server command to start typing effect
+  sendServerCommand('typing_effect');
+  
+  // Start typing effect for all users
+  startTypingEffectForAll();
+}
+
+function startTypingEffectForAll() {
+  const heroSubtitle = document.getElementById('hero-subtitle');
+  const originalText = heroSubtitle.textContent;
+  heroSubtitle.textContent = '';
+  heroSubtitle.classList.add('typing-effect');
+  
+  setTimeout(() => {
+    heroSubtitle.textContent = originalText;
+    heroSubtitle.classList.remove('typing-effect');
+  }, 3000);
+}
+
+function startFloatEffect() {
+  // Send server command to start float effect
+  sendServerCommand('float_effect');
+  
+  // Start float effect for all users
+  startFloatEffectForAll();
+}
+
+function startFloatEffectForAll() {
+  const gameIcons = document.querySelectorAll('.game-icon');
+  gameIcons.forEach(icon => {
+    icon.classList.add('float-effect');
+  });
+  
+  setTimeout(() => {
+    gameIcons.forEach(icon => {
+      icon.classList.remove('float-effect');
+    });
+  }, 3000);
+}
+
+function startJelloEffect() {
+  // Send server command to start jello effect
+  sendServerCommand('jello_effect');
+  
+  // Start jello effect for all users
+  startJelloEffectForAll();
+}
+
+function startJelloEffectForAll() {
+  const playButtons = document.querySelectorAll('.play-btn');
+  playButtons.forEach(btn => {
+    btn.classList.add('jello-effect');
+  });
+  
+  setTimeout(() => {
+    playButtons.forEach(btn => {
+      btn.classList.remove('jello-effect');
+    });
+  }, 1000);
+}
+
+function startWobbleEffect() {
+  // Send server command to start wobble effect
+  sendServerCommand('wobble_effect');
+  
+  // Start wobble effect for all users
+  startWobbleEffectForAll();
+}
+
+function startWobbleEffectForAll() {
+  const accountBtn = document.getElementById('account-btn');
+  accountBtn.classList.add('wobble-effect');
+  
+  setTimeout(() => {
+    accountBtn.classList.remove('wobble-effect');
+  }, 1000);
+}
+
+function startHeartbeatEffect() {
+  // Send server command to start heartbeat effect
+  sendServerCommand('heartbeat_effect');
+  
+  // Start heartbeat effect for all users
+  startHeartbeatEffectForAll();
+}
+
+function startHeartbeatEffectForAll() {
+  const diamondCounter = document.getElementById('diamond-counter');
+  diamondCounter.classList.add('heartbeat-effect');
+  
+  setTimeout(() => {
+    diamondCounter.classList.remove('heartbeat-effect');
+  }, 1500);
+}
+
+function startRubberBandEffect() {
+  // Send server command to start rubberBand effect
+  sendServerCommand('rubberBand_effect');
+  
+  // Start rubberBand effect for all users
+  startRubberBandEffectForAll();
+}
+
+function startRubberBandEffectForAll() {
+  const shopBtn = document.getElementById('shop-btn');
+  shopBtn.classList.add('rubberBand-effect');
+  
+  setTimeout(() => {
+    shopBtn.classList.remove('rubberBand-effect');
+  }, 1000);
+}
+
+function startTadaEffect() {
+  // Send server command to start tada effect
+  sendServerCommand('tada_effect');
+  
+  // Start tada effect for all users
+  startTadaEffectForAll();
+}
+
+function startTadaEffectForAll() {
+  const promoBtn = document.getElementById('promo-btn');
+  promoBtn.classList.add('tada-effect');
+  
+  setTimeout(() => {
+    promoBtn.classList.remove('tada-effect');
+  }, 1000);
+}
+
+function startFlashEffect() {
+  // Send server command to start flash effect
+  sendServerCommand('flash_effect');
+  
+  // Start flash effect for all users
+  startFlashEffectForAll();
+}
+
+function startFlashEffectForAll() {
+  const footerLinks = document.querySelectorAll('.footer-link');
+  footerLinks.forEach(link => {
+    link.classList.add('flash-effect');
+  });
+  
+  setTimeout(() => {
+    footerLinks.forEach(link => {
+      link.classList.remove('flash-effect');
+    });
+  }, 1000);
+}
+
 // Admin panel event listeners
 adminClose.addEventListener('click', () => {
   adminPage.style.display = 'none';
@@ -1611,6 +2377,94 @@ give3DiamondsBtn.addEventListener('click', () => {
 
 give1DiamondBtn.addEventListener('click', () => {
   giveDiamondsToAll(1);
+});
+
+betaTestBtn.addEventListener('click', () => {
+  startBetaTestAnimation();
+});
+
+confettiBtn.addEventListener('click', () => {
+  startConfettiAnimation();
+});
+
+fireworksBtn.addEventListener('click', () => {
+  startFireworksAnimation();
+});
+
+rainbowTextBtn.addEventListener('click', () => {
+  startRainbowTextAnimation();
+});
+
+pulseEffectBtn.addEventListener('click', () => {
+  startPulseEffect();
+});
+
+shakeEffectBtn.addEventListener('click', () => {
+  startShakeEffect();
+});
+
+spinEffectBtn.addEventListener('click', () => {
+  startSpinEffect();
+});
+
+bounceEffectBtn.addEventListener('click', () => {
+  startBounceEffect();
+});
+
+flipEffectBtn.addEventListener('click', () => {
+  startFlipEffect();
+});
+
+zoomEffectBtn.addEventListener('click', () => {
+  startZoomEffect();
+});
+
+slideInEffectBtn.addEventListener('click', () => {
+  startSlideInEffect();
+});
+
+fadeInEffectBtn.addEventListener('click', () => {
+  startFadeInEffect();
+});
+
+glitchEffectBtn.addEventListener('click', () => {
+  startGlitchEffect();
+});
+
+neonEffectBtn.addEventListener('click', () => {
+  startNeonEffect();
+});
+
+typingEffectBtn.addEventListener('click', () => {
+  startTypingEffect();
+});
+
+floatEffectBtn.addEventListener('click', () => {
+  startFloatEffect();
+});
+
+jelloEffectBtn.addEventListener('click', () => {
+  startJelloEffect();
+});
+
+wobbleEffectBtn.addEventListener('click', () => {
+  startWobbleEffect();
+});
+
+heartbeatEffectBtn.addEventListener('click', () => {
+  startHeartbeatEffect();
+});
+
+rubberBandEffectBtn.addEventListener('click', () => {
+  startRubberBandEffect();
+});
+
+tadaEffectBtn.addEventListener('click', () => {
+  startTadaEffect();
+});
+
+flashEffectBtn.addEventListener('click', () => {
+  startFlashEffect();
 });
 
 sendGlobalMessageBtn.addEventListener('click', sendGlobalMessage);
@@ -1626,6 +2480,14 @@ startTimerBtn.addEventListener('click', startTimer);
 timerInput.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') {
     startTimer();
+  }
+});
+
+startGlobalTimerBtn.addEventListener('click', startGlobalTimer);
+
+globalTimerInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    startGlobalTimer();
   }
 });
 
