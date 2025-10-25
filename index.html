@@ -21,6 +21,15 @@
     <div class="loading-text" id="loading-text">Loading lunar adventure...</div>
   </div>
   
+  <!-- Site Timer -->
+  <div class="site-timer" id="site-timer" style="display: none;"></div>
+  
+  <!-- Global Notification -->
+  <div class="global-notification" id="global-notification" style="display: none;"></div>
+  
+  <!-- Meteor Shower -->
+  <div class="meteor-shower" id="meteor-shower"></div>
+  
   <div class="navbar">
     <span class="logo" id="moon-logo">
       <span class="moon-icon">🌑</span>
@@ -58,6 +67,9 @@
             <div id="premium-badge" style="display: none;">
               <span class="account-premium-badge">PREMIUM</span>
             </div>
+            <div id="admin-badge" style="display: none;">
+              <span class="account-admin-badge">ADMIN</span>
+            </div>
           </div>
         </div>
         
@@ -90,6 +102,10 @@
           <button class="account-action-btn" id="premium-action-btn">
             <i class="fas fa-crown"></i>
             Premium
+          </button>
+          <button class="account-action-btn" id="admin-panel-btn" style="display: none;">
+            <i class="fas fa-tools"></i>
+            Admin Panel
           </button>
           <button class="account-action-btn" id="logout-action-btn">
             <i class="fas fa-sign-out-alt"></i>
@@ -188,7 +204,7 @@
         <div class="hero-stat-label" id="hero-games-label">Available Games</div>
       </div>
       <div class="hero-stat">
-        <div class="hero-stat-value" id="hero-players">1.2K+</div>
+        <div class="hero-stat-value" id="hero-players">0</div>
         <div class="hero-stat-label" id="hero-players-label">Active Players</div>
       </div>
       <div class="hero-stat">
@@ -270,6 +286,55 @@
             <i class="fab fa-discord"></i>
             <span id="discord-btn-text">Discord Server</span>
           </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Admin Panel -->
+  <div class="achievements-page" id="admin-page" style="display:none;">
+    <div class="admin-panel">
+      <button class="achieve-close" id="admin-close" title="Close admin panel">×</button>
+      
+      <div class="admin-header">
+        <h2 class="admin-title" id="admin-title">Admin Panel</h2>
+        <p class="admin-subtitle" id="admin-subtitle">Manage players and site features</p>
+      </div>
+      
+      <div class="admin-section">
+        <h3 class="admin-section-title">Global Actions</h3>
+        <div class="admin-buttons">
+          <button class="admin-btn success" id="give-3-diamonds">
+            <i class="fas fa-gem"></i>
+            Give All +3 Diamonds
+          </button>
+          <button class="admin-btn success" id="give-1-diamond">
+            <i class="fas fa-gem"></i>
+            Give All +1 Diamond
+          </button>
+        </div>
+        
+        <div class="admin-input-group">
+          <input type="text" class="admin-input" id="global-message-input" placeholder="Enter global message">
+          <button class="admin-btn" id="send-global-message" style="margin-top: 1rem; width: 100%;">
+            <i class="fas fa-bullhorn"></i>
+            Send Global Message
+          </button>
+        </div>
+        
+        <div class="admin-input-group">
+          <input type="number" class="admin-input" id="timer-input" placeholder="Timer in seconds">
+          <button class="admin-btn danger" id="start-timer" style="margin-top: 1rem; width: 100%;">
+            <i class="fas fa-clock"></i>
+            Start Timer
+          </button>
+        </div>
+      </div>
+      
+      <div class="admin-section">
+        <h3 class="admin-section-title">Players Management</h3>
+        <div class="players-list" id="players-list">
+          <!-- Players will be dynamically added here -->
         </div>
       </div>
     </div>
