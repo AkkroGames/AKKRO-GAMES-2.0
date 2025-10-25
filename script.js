@@ -79,7 +79,21 @@ const translations = {
     telegramChannel: "Telegram Channel",
     discordServer: "Discord Server",
     socialPromoTitle: "Find active promocodes in our social networks",
-    socialPromoDescription: "Join our community to get exclusive promocodes, participate in giveaways and be the first to know about new games and updates!"
+    socialPromoDescription: "Join our community to get exclusive promocodes, participate in giveaways and be the first to know about new games and updates!",
+    
+    // Admin Panel
+    adminPanel: "Admin Panel",
+    adminSubtitle: "Manage players and site features",
+    globalActions: "Global Actions",
+    playersManagement: "Players Management",
+    giveAll3Diamonds: "Give All +3 Diamonds",
+    giveAll1Diamond: "Give All +1 Diamond",
+    enterGlobalMessage: "Enter global message",
+    sendGlobalMessage: "Send Global Message",
+    timerInSeconds: "Timer in seconds",
+    startTimer: "Start Timer",
+    kick: "Kick",
+    giveDiamonds: "Give Diamonds"
   },
   ru: {
     // Hero section
@@ -160,7 +174,21 @@ const translations = {
     telegramChannel: "Телеграм Канал",
     discordServer: "Discord Сервер",
     socialPromoTitle: "Найдите активные промокоды в наших социальных сетях",
-    socialPromoDescription: "Присоединяйтесь к нашему сообществу, чтобы получать эксклюзивные промокоды, участвовать в розыгрышах и первыми узнавать о новых играх и обновлениях!"
+    socialPromoDescription: "Присоединяйтесь к нашему сообществу, чтобы получать эксклюзивные промокоды, участвовать в розыгрышах и первыми узнавать о новых играх и обновлениях!",
+    
+    // Admin Panel
+    adminPanel: "Админ Панель",
+    adminSubtitle: "Управление игроками и функциями сайта",
+    globalActions: "Глобальные действия",
+    playersManagement: "Управление игроками",
+    giveAll3Diamonds: "Выдать всем +3 алмаза",
+    giveAll1Diamond: "Выдать всем +1 алмаз",
+    enterGlobalMessage: "Введите глобальное сообщение",
+    sendGlobalMessage: "Отправить глобальное сообщение",
+    timerInSeconds: "Таймер в секундах",
+    startTimer: "Запустить таймер",
+    kick: "Кикнуть",
+    giveDiamonds: "Выдать алмазы"
   },
   es: {
     // Hero section
@@ -241,7 +269,21 @@ const translations = {
     telegramChannel: "Canal de Telegram",
     discordServer: "Servidor de Discord",
     socialPromoTitle: "Encuentra códigos promocionales activos en nuestras redes sociales",
-    socialPromoDescription: "¡Únete a nuestra comunidad para obtener códigos promocionales exclusivos, participar en sorteos y ser el primero en enterarte de nuevos juegos y actualizaciones!"
+    socialPromoDescription: "¡Únete a nuestra comunidad para obtener códigos promocionales exclusivos, participar en sorteos y ser el primero en enterarte de nuevos juegos y actualizaciones!",
+    
+    // Admin Panel
+    adminPanel: "Panel de Administración",
+    adminSubtitle: "Gestiona jugadores y funciones del sitio",
+    globalActions: "Acciones Globales",
+    playersManagement: "Gestión de Jugadores",
+    giveAll3Diamonds: "Dar a Todos +3 Diamantes",
+    giveAll1Diamond: "Dar a Todos +1 Diamante",
+    enterGlobalMessage: "Ingresa mensaje global",
+    sendGlobalMessage: "Enviar Mensaje Global",
+    timerInSeconds: "Temporizador en segundos",
+    startTimer: "Iniciar Temporizador",
+    kick: "Expulsar",
+    giveDiamonds: "Dar Diamantes"
   }
 };
 
@@ -344,6 +386,18 @@ function setLanguage(lang) {
   document.getElementById('social-promo-description').textContent = t.socialPromoDescription;
   document.getElementById('telegram-btn-text').textContent = t.telegramChannel;
   document.getElementById('discord-btn-text').textContent = t.discordServer;
+  
+  // Admin Panel
+  document.getElementById('admin-title').textContent = t.adminPanel;
+  document.getElementById('admin-subtitle').textContent = t.adminSubtitle;
+  document.querySelector('.admin-section-title').textContent = t.globalActions;
+  document.querySelectorAll('.admin-section-title')[1].textContent = t.playersManagement;
+  document.getElementById('give-3-diamonds').innerHTML = `<i class="fas fa-gem"></i> ${t.giveAll3Diamonds}`;
+  document.getElementById('give-1-diamond').innerHTML = `<i class="fas fa-gem"></i> ${t.giveAll1Diamond}`;
+  document.getElementById('global-message-input').placeholder = t.enterGlobalMessage;
+  document.getElementById('send-global-message').innerHTML = `<i class="fas fa-bullhorn"></i> ${t.sendGlobalMessage}`;
+  document.getElementById('timer-input').placeholder = t.timerInSeconds;
+  document.getElementById('start-timer').innerHTML = `<i class="fas fa-clock"></i> ${t.startTimer}`;
   
   // Update language buttons
   document.querySelectorAll('.language-btn').forEach(btn => {
@@ -473,7 +527,60 @@ function initializeUI() {
   
   // Initialize statistics
   document.getElementById('hero-games').textContent = '3+';
-  document.getElementById('hero-players').textContent = '1.2K+';
+  updateActivePlayersCount();
+  document.getElementById('hero-achievements').textContent = '15+';
+  
+  // Initialize admin account
+  initializeAdminAccount();
+  
+  // Start active players tracking
+  startActivePlayersTracking();
+}
+
+// ===== ACTIVE PLAYERS SYSTEM =====
+let activePlayers = JSON.parse(localStorage.getItem('akkro_active_players') || '[]');
+let currentSessionId = generateSessionId();
+
+function generateSessionId() {
+  return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+}
+
+function startActivePlayersTracking() {
+  // Add current session to active players
+  if (!activePlayers.find(p => p.id === currentSessionId)) {
+    activePlayers.push({
+      id: currentSessionId,
+      timestamp: Date.now(),
+      user: currentUser ? currentUser.username : 'Guest'
+    });
+    localStorage.setItem('akkro_active_players', JSON.stringify(activePlayers));
+  }
+  
+  // Update active players count
+  updateActivePlayersCount();
+  
+  // Clean up old sessions (older than 5 minutes)
+  cleanUpOldSessions();
+  
+  // Update count every 30 seconds
+  setInterval(() => {
+    updateActivePlayersCount();
+    cleanUpOldSessions();
+  }, 30000);
+}
+
+function updateActivePlayersCount() {
+  // Count only sessions from last 5 minutes
+  const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
+  const recentSessions = activePlayers.filter(p => p.timestamp > fiveMinutesAgo);
+  
+  document.getElementById('hero-players').textContent = recentSessions.length;
+}
+
+function cleanUpOldSessions() {
+  const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
+  activePlayers = activePlayers.filter(p => p.timestamp > fiveMinutesAgo);
+  localStorage.setItem('akkro_active_players', JSON.stringify(activePlayers));
 }
 
 // ===== GAMES LIST =====
@@ -766,7 +873,7 @@ function renderAchievements() {
         <span class="achieve-icon${unlocked ? (a.key==="moon_achieve"?" fire":"") : " achieve-locked"}">${unlocked ? (a.fireIcon||a.icon) : a.icon}</span>
         <div class="achieve-content">
           <div class="achieve-title">${a.title}</div>
-          <div class="achieve-desc">${a.desc}</div>
+        <div class="achieve-desc">${a.desc}</div>
           ${a.reward ? `<div class="achieve-reward">+${a.reward} 💎</div>` : ''}
         </div>
         <span class="achieve-lock">${unlocked ? "" : "🔒"}</span>
@@ -793,7 +900,8 @@ const promoCodes = [
   { code: "BETATEST", reward: 10, description: "Starlight Reward" },
   { code: "AKKROGAMES", reward: 5, description: "Galaxy Gift" },
   { code: "11/1/25", reward: 7, description: "Cosmic Surprise" },
-  { code: "FREE", reward: 5, description: "Space Bonus" }
+  { code: "FREE", reward: 5, description: "Space Bonus" },
+  { code: "ADMIN123123", reward: 0, description: "Admin Access", isAdminCode: true }
 ];
 
 const promoBtn = document.getElementById('promo-btn');
@@ -825,7 +933,12 @@ function activatePromoCode(code) {
     return false;
   }
   
-  // Activate the promocode
+  // Special handling for admin code
+  if (promo.isAdminCode) {
+    return activateAdminPromoCode();
+  }
+  
+  // Activate the regular promocode
   usedCodes.push(code);
   setUsedPromoCodes(usedCodes);
   setDiamonds(getDiamonds() + promo.reward);
@@ -836,6 +949,32 @@ function activatePromoCode(code) {
   // Update UI
   promoInput.value = '';
   
+  return true;
+}
+
+// Special function for admin promo code
+function activateAdminPromoCode() {
+  const users = JSON.parse(localStorage.getItem('akkro_users') || '[]');
+  const adminUser = users.find(u => u.username === 'ADMIN123123');
+  
+  if (!adminUser) {
+    showNotification('Admin account not found', 'error');
+    return false;
+  }
+  
+  // Login as admin
+  currentUser = adminUser;
+  localStorage.setItem('akkro_current_user', JSON.stringify(adminUser));
+  updateAccountUI();
+  
+  // Close promo page and open admin panel
+  promoPage.style.display = "none";
+  window.promoOpen = false;
+  
+  // Show admin panel
+  showAdminPanel();
+  
+  showNotification('Admin access granted! Welcome back, ADMIN123123!', 'success');
   return true;
 }
 
@@ -873,12 +1012,14 @@ const accountAvatar = document.getElementById('account-avatar');
 const accountUsername = document.getElementById('account-username');
 const accountEmail = document.getElementById('account-email');
 const premiumBadge = document.getElementById('premium-badge');
+const adminBadge = document.getElementById('admin-badge');
 const accountActions = document.getElementById('account-actions');
 const userActions = document.getElementById('user-actions');
 const loginActionBtn = document.getElementById('login-action-btn');
 const registerActionBtn = document.getElementById('register-action-btn');
 const profileActionBtn = document.getElementById('profile-action-btn');
 const premiumActionBtn = document.getElementById('premium-action-btn');
+const adminPanelBtn = document.getElementById('admin-panel-btn');
 const logoutActionBtn = document.getElementById('logout-action-btn');
 
 const authPage = document.getElementById('auth-page');
@@ -892,10 +1033,28 @@ const googleRegisterBtn = document.getElementById('google-register-btn');
 
 let currentUser = JSON.parse(localStorage.getItem('akkro_current_user') || 'null');
 
-// Initialize Google Sign-In
-function initializeGoogleAuth() {
-  // This would be replaced with actual Google Client ID
-  console.log("Google Auth would be initialized here with real Client ID");
+// Initialize admin account
+function initializeAdminAccount() {
+  const users = JSON.parse(localStorage.getItem('akkro_users') || '[]');
+  const adminUser = users.find(u => u.username === 'ADMIN123123');
+  
+  if (!adminUser) {
+    // Create admin account if it doesn't exist
+    const newAdmin = {
+      id: 'admin_' + Date.now(),
+      username: 'ADMIN123123',
+      email: 'admin@akkrogames.com',
+      password: 'ADMIN123123',
+      provider: 'email',
+      registered: new Date().toISOString(),
+      isPremium: true,
+      isAdmin: true,
+      diamonds: 1000
+    };
+    
+    users.push(newAdmin);
+    localStorage.setItem('akkro_users', JSON.stringify(users));
+  }
 }
 
 // Handle Google response
@@ -909,7 +1068,8 @@ function handleGoogleAuth(response) {
     avatar: responsePayload.picture,
     provider: 'google',
     registered: new Date().toISOString(),
-    isPremium: false
+    isPremium: false,
+    isAdmin: false
   };
   
   // Save user
@@ -925,6 +1085,7 @@ function handleGoogleAuth(response) {
   } else {
     userData.diamonds = existingUser.diamonds || 0;
     userData.isPremium = existingUser.isPremium || false;
+    userData.isAdmin = existingUser.isAdmin || false;
   }
   
   currentUser = userData;
@@ -964,6 +1125,19 @@ function updateAccountUI() {
       premiumBadge.style.display = 'none';
     }
     
+    // Admin status
+    if (currentUser.isAdmin) {
+      accountBtn.classList.add('admin');
+      accountAvatar.classList.add('admin');
+      adminBadge.style.display = 'block';
+      adminPanelBtn.style.display = 'block';
+    } else {
+      accountBtn.classList.remove('admin');
+      accountAvatar.classList.remove('admin');
+      adminBadge.style.display = 'none';
+      adminPanelBtn.style.display = 'none';
+    }
+    
     accountActions.style.display = 'none';
     userActions.style.display = 'block';
   } else {
@@ -972,8 +1146,11 @@ function updateAccountUI() {
     accountEmail.textContent = t.enterAccount;
     accountAvatar.innerHTML = '<i class="fas fa-user"></i>';
     accountBtn.classList.remove('premium');
+    accountBtn.classList.remove('admin');
     accountAvatar.classList.remove('premium');
+    accountAvatar.classList.remove('admin');
     premiumBadge.style.display = 'none';
+    adminBadge.style.display = 'none';
     accountActions.style.display = 'block';
     userActions.style.display = 'none';
   }
@@ -1012,6 +1189,7 @@ function registerUser(username, email, password) {
     provider: 'email',
     registered: new Date().toISOString(),
     isPremium: false,
+    isAdmin: false,
     diamonds: 10
   };
   
@@ -1120,6 +1298,11 @@ premiumActionBtn.addEventListener('click', () => {
   accountMenu.classList.remove('show');
 });
 
+adminPanelBtn.addEventListener('click', () => {
+  showAdminPanel();
+  accountMenu.classList.remove('show');
+});
+
 logoutActionBtn.addEventListener('click', () => {
   logoutUser();
   accountMenu.classList.remove('show');
@@ -1189,6 +1372,262 @@ function showNotification(message, type = 'info') {
     }, 300);
   }, 4000);
 }
+
+// ===== ADMIN PANEL SYSTEM =====
+const adminPage = document.getElementById('admin-page');
+const adminClose = document.getElementById('admin-close');
+const give3DiamondsBtn = document.getElementById('give-3-diamonds');
+const give1DiamondBtn = document.getElementById('give-1-diamond');
+const globalMessageInput = document.getElementById('global-message-input');
+const sendGlobalMessageBtn = document.getElementById('send-global-message');
+const timerInput = document.getElementById('timer-input');
+const startTimerBtn = document.getElementById('start-timer');
+const playersList = document.getElementById('players-list');
+
+function showAdminPanel() {
+  if (!currentUser || !currentUser.isAdmin) {
+    showNotification('Access denied. Admin privileges required.', 'error');
+    return;
+  }
+  
+  renderPlayersList();
+  adminPage.style.display = 'flex';
+}
+
+function renderPlayersList() {
+  const users = JSON.parse(localStorage.getItem('akkro_users') || '[]');
+  const t = translations[currentLanguage];
+  
+  playersList.innerHTML = '';
+  
+  users.forEach(user => {
+    if (user.isAdmin) return; // Skip admin users
+    
+    const playerItem = document.createElement('div');
+    playerItem.className = 'player-item';
+    playerItem.innerHTML = `
+      <div class="player-info">
+        <div class="player-username">${user.username}</div>
+        <div class="player-email">${user.email}</div>
+      </div>
+      <div class="player-actions">
+        <button class="player-action-btn kick" data-user-id="${user.id}">
+          <i class="fas fa-user-slash"></i>
+          ${t.kick}
+        </button>
+        <button class="player-action-btn diamonds" data-user-id="${user.id}">
+          <i class="fas fa-gem"></i>
+          ${t.giveDiamonds}
+        </button>
+      </div>
+    `;
+    
+    playersList.appendChild(playerItem);
+  });
+  
+  // Add event listeners for player actions
+  document.querySelectorAll('.player-action-btn.kick').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const userId = btn.getAttribute('data-user-id');
+      kickPlayer(userId);
+    });
+  });
+  
+  document.querySelectorAll('.player-action-btn.diamonds').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const userId = btn.getAttribute('data-user-id');
+      giveDiamondsToPlayer(userId);
+    });
+  });
+}
+
+function kickPlayer(userId) {
+  const users = JSON.parse(localStorage.getItem('akkro_users') || '[]');
+  const user = users.find(u => u.id === userId);
+  
+  if (user) {
+    // In a real application, you would disconnect the user from the server
+    // For this demo, we'll just show a notification
+    showNotification(`Kicked user: ${user.username}`, 'info');
+  }
+}
+
+function giveDiamondsToPlayer(userId) {
+  const diamondAmount = prompt('Enter amount of diamonds to give:');
+  if (!diamondAmount || isNaN(diamondAmount) || diamondAmount <= 0) {
+    showNotification('Invalid amount', 'error');
+    return;
+  }
+  
+  const users = JSON.parse(localStorage.getItem('akkro_users') || '[]');
+  const user = users.find(u => u.id === userId);
+  
+  if (user) {
+    user.diamonds = (user.diamonds || 0) + parseInt(diamondAmount);
+    localStorage.setItem('akkro_users', JSON.stringify(users));
+    
+    // If the user is currently logged in, update their diamonds
+    if (currentUser && currentUser.id === userId) {
+      currentUser.diamonds = user.diamonds;
+      localStorage.setItem('akkro_current_user', JSON.stringify(currentUser));
+      setDiamonds(user.diamonds);
+    }
+    
+    showNotification(`Gave ${diamondAmount} diamonds to ${user.username}`, 'success');
+  }
+}
+
+function giveDiamondsToAll(amount) {
+  const users = JSON.parse(localStorage.getItem('akkro_users') || '[]');
+  
+  users.forEach(user => {
+    if (!user.isAdmin) { // Don't give diamonds to admin
+      user.diamonds = (user.diamonds || 0) + amount;
+      
+      // If the user is currently logged in, update their diamonds
+      if (currentUser && currentUser.id === user.id) {
+        currentUser.diamonds = user.diamonds;
+        localStorage.setItem('akkro_current_user', JSON.stringify(currentUser));
+        setDiamonds(user.diamonds);
+      }
+    }
+  });
+  
+  localStorage.setItem('akkro_users', JSON.stringify(users));
+  showNotification(`Gave ${amount} diamonds to all players!`, 'success');
+}
+
+function sendGlobalMessage() {
+  const message = globalMessageInput.value.trim();
+  if (!message) {
+    showNotification('Please enter a message', 'error');
+    return;
+  }
+  
+  // Show the message to all users (in a real app, this would be sent to a server)
+  showGlobalNotification(message);
+  globalMessageInput.value = '';
+}
+
+function showGlobalNotification(message) {
+  const notification = document.getElementById('global-notification');
+  notification.textContent = message;
+  notification.style.display = 'block';
+  
+  setTimeout(() => {
+    notification.style.display = 'none';
+  }, 3000);
+}
+
+function startTimer() {
+  const seconds = parseInt(timerInput.value);
+  if (isNaN(seconds) || seconds <= 0) {
+    showNotification('Please enter a valid number of seconds', 'error');
+    return;
+  }
+  
+  // Show timer
+  const timerElement = document.getElementById('site-timer');
+  timerElement.style.display = 'block';
+  
+  let timeLeft = seconds;
+  
+  const timerInterval = setInterval(() => {
+    timerElement.textContent = formatTime(timeLeft);
+    
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      timerElement.classList.add('timer-expired');
+      timerElement.textContent = 'TIME\'S UP!';
+      
+      // Start meteor shower animation
+      startMeteorShower();
+      
+      // Hide timer after 5 seconds
+      setTimeout(() => {
+        timerElement.style.display = 'none';
+        timerElement.classList.remove('timer-expired');
+      }, 5000);
+    }
+    
+    timeLeft--;
+  }, 1000);
+  
+  timerInput.value = '';
+}
+
+function formatTime(seconds) {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+}
+
+function startMeteorShower() {
+  const meteorShower = document.getElementById('meteor-shower');
+  
+  // Create multiple meteors
+  for (let i = 0; i < 20; i++) {
+    setTimeout(() => {
+      createMeteor();
+    }, i * 200);
+  }
+  
+  // Clear meteors after animation
+  setTimeout(() => {
+    meteorShower.innerHTML = '';
+  }, 5000);
+}
+
+function createMeteor() {
+  const meteorShower = document.getElementById('meteor-shower');
+  const meteor = document.createElement('div');
+  meteor.className = 'meteor';
+  
+  // Random position and animation
+  const startX = Math.random() * 100;
+  const duration = 2 + Math.random() * 3;
+  
+  meteor.style.left = `${startX}%`;
+  meteor.style.animationDuration = `${duration}s`;
+  
+  meteorShower.appendChild(meteor);
+  
+  // Remove meteor after animation
+  setTimeout(() => {
+    if (meteor.parentNode === meteorShower) {
+      meteorShower.removeChild(meteor);
+    }
+  }, duration * 1000);
+}
+
+// Admin panel event listeners
+adminClose.addEventListener('click', () => {
+  adminPage.style.display = 'none';
+});
+
+give3DiamondsBtn.addEventListener('click', () => {
+  giveDiamondsToAll(3);
+});
+
+give1DiamondBtn.addEventListener('click', () => {
+  giveDiamondsToAll(1);
+});
+
+sendGlobalMessageBtn.addEventListener('click', sendGlobalMessage);
+
+globalMessageInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    sendGlobalMessage();
+  }
+});
+
+startTimerBtn.addEventListener('click', startTimer);
+
+timerInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    startTimer();
+  }
+});
 
 // ===== DESIGN SHOP WITH SALES SYSTEM =====
 const shopDesigns = [
@@ -1529,6 +1968,7 @@ document.addEventListener('click', (e) => {
     window.achieveOpen = false;
     window.shopOpen = false;
     window.promoOpen = false;
+    window.adminOpen = false;
   }
 });
 
