@@ -5,7 +5,7 @@
   <title>Akkro Games - Moon Night</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="style.css">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
@@ -29,6 +29,22 @@
   
   <!-- Meteor Shower -->
   <div class="meteor-shower" id="meteor-shower"></div>
+  
+  <!-- Global Timer -->
+  <div class="global-timer" id="global-timer" style="display: none;"></div>
+  
+  <!-- Beta Test Animation Elements -->
+  <div class="lag-effect" id="lag-effect" style="display: none;"></div>
+  <div class="blue-screen" id="blue-screen" style="display: none;">
+    <div class="blue-screen-text" id="blue-screen-text"></div>
+  </div>
+  <div class="beta-test-overlay" id="beta-test-overlay" style="display: none;">
+    <div class="beta-test-text">Welcome to Beta Test!</div>
+  </div>
+  
+  <!-- New Animation Elements -->
+  <div class="confetti-container" id="confetti-container" style="display: none;"></div>
+  <div class="fireworks-container" id="fireworks-container" style="display: none;"></div>
   
   <div class="navbar">
     <span class="logo" id="moon-logo">
@@ -312,6 +328,22 @@
             <i class="fas fa-gem"></i>
             Give All +1 Diamond
           </button>
+          <button class="admin-btn" id="beta-test-btn">
+            <i class="fas fa-vial"></i>
+            Beta Test Animation
+          </button>
+          <button class="admin-btn" id="confetti-btn">
+            <i class="fas fa-birthday-cake"></i>
+            Confetti Animation
+          </button>
+          <button class="admin-btn" id="fireworks-btn">
+            <i class="fas fa-fire"></i>
+            Fireworks Animation
+          </button>
+          <button class="admin-btn" id="rainbow-text-btn">
+            <i class="fas fa-rainbow"></i>
+            Rainbow Text
+          </button>
         </div>
         
         <div class="admin-input-group">
@@ -327,6 +359,98 @@
           <button class="admin-btn danger" id="start-timer" style="margin-top: 1rem; width: 100%;">
             <i class="fas fa-clock"></i>
             Start Timer
+          </button>
+        </div>
+        
+        <div class="admin-input-group">
+          <input type="number" class="admin-input" id="global-timer-input" placeholder="Global timer in seconds">
+          <button class="admin-btn" id="start-global-timer" style="margin-top: 1rem; width: 100%;">
+            <i class="fas fa-globe"></i>
+            Start Global Timer
+          </button>
+        </div>
+      </div>
+      
+      <div class="admin-section">
+        <h3 class="admin-section-title">Animation Effects</h3>
+        <div class="admin-buttons">
+          <button class="admin-btn" id="pulse-effect-btn">
+            <i class="fas fa-heartbeat"></i>
+            Pulse Effect
+          </button>
+          <button class="admin-btn" id="shake-effect-btn">
+            <i class="fas fa-exclamation"></i>
+            Shake Effect
+          </button>
+          <button class="admin-btn" id="spin-effect-btn">
+            <i class="fas fa-sync"></i>
+            Spin Effect
+          </button>
+          <button class="admin-btn" id="bounce-effect-btn">
+            <i class="fas fa-basketball-ball"></i>
+            Bounce Effect
+          </button>
+          <button class="admin-btn" id="flip-effect-btn">
+            <i class="fas fa-retweet"></i>
+            Flip Effect
+          </button>
+          <button class="admin-btn" id="zoom-effect-btn">
+            <i class="fas fa-search-plus"></i>
+            Zoom Effect
+          </button>
+        </div>
+        
+        <div class="admin-buttons">
+          <button class="admin-btn" id="slide-in-effect-btn">
+            <i class="fas fa-arrow-right"></i>
+            Slide In Effect
+          </button>
+          <button class="admin-btn" id="fade-in-effect-btn">
+            <i class="fas fa-eye"></i>
+            Fade In Effect
+          </button>
+          <button class="admin-btn" id="glitch-effect-btn">
+            <i class="fas fa-bug"></i>
+            Glitch Effect
+          </button>
+          <button class="admin-btn" id="neon-effect-btn">
+            <i class="fas fa-lightbulb"></i>
+            Neon Effect
+          </button>
+          <button class="admin-btn" id="typing-effect-btn">
+            <i class="fas fa-keyboard"></i>
+            Typing Effect
+          </button>
+          <button class="admin-btn" id="float-effect-btn">
+            <i class="fas fa-cloud"></i>
+            Float Effect
+          </button>
+        </div>
+        
+        <div class="admin-buttons">
+          <button class="admin-btn" id="jello-effect-btn">
+            <i class="fas fa-cube"></i>
+            Jello Effect
+          </button>
+          <button class="admin-btn" id="wobble-effect-btn">
+            <i class="fas fa-balance-scale"></i>
+            Wobble Effect
+          </button>
+          <button class="admin-btn" id="heartbeat-effect-btn">
+            <i class="fas fa-heart"></i>
+            Heartbeat Effect
+          </button>
+          <button class="admin-btn" id="rubberBand-effect-btn">
+            <i class="fas fa-expand"></i>
+            RubberBand Effect
+          </button>
+          <button class="admin-btn" id="tada-effect-btn">
+            <i class="fas fa-gift"></i>
+            Tada Effect
+          </button>
+          <button class="admin-btn" id="flash-effect-btn">
+            <i class="fas fa-bolt"></i>
+            Flash Effect
           </button>
         </div>
       </div>
