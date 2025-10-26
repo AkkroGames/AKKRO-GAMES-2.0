@@ -1,803 +1,626 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Akkro Games - Admin Abuse Mode</title>
+  <title>Akkro Games - Moon Night</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-  /* ===== BASE STYLES ===== */
-  html, body {
-    background: linear-gradient(135deg, #0f0f13, #191922 120%);
-    color: #d3d3d6;
-    margin: 0;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-    transition: background 1.2s, color 1.2s;
-  }
-
-  /* ===== LOADER ===== */
-  #loader-bg {
-    position: fixed;
-    z-index: 10000;
-    inset: 0;
-    background: linear-gradient(135deg, #10101a 80%, #26263a 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    transition: opacity .7s, visibility .7s;
-  }
-
-  #loader-bg.loaded {
-    opacity: 0;
-    visibility: hidden;
-  }
-
-  .moon-loader {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    position: relative;
-    background: radial-gradient(circle at 40% 40%, #fff 70%, #b9c2e6 100%);
-    box-shadow: 0 0 80px 12px #b6bcfa;
-    animation: moon-spin 1.8s infinite linear alternate, moon-pulse 2s infinite alternate;
-  }
-
-  .loading-text {
-    margin-top: 30px;
-    font-size: 1.2rem;
-    color: #f6f6fa;
-    text-align: center;
-    max-width: 300px;
-    line-height: 1.5;
-  }
-
-  @keyframes moon-spin {
-    from { transform: rotate(-30deg); }
-    to   { transform: rotate(40deg);}
-  }
-
-  @keyframes moon-pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
-  }
-
-  /* ===== NAVIGATION ===== */
-  .navbar {
-    background: rgba(25,25,34,0.92);
-    backdrop-filter: blur(10px);
-    padding: 1.2rem 2rem;
-    display: flex;
-    align-items: center;
-    box-shadow: 0 2px 24px #0008;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    justify-content: space-between;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-  }
-
-  .logo {
-    font-size: 2.2rem;
-    font-weight: bold;
-    color: #f6f6fa;
-    letter-spacing: 2px;
-    display: flex;
-    align-items: center;
-    gap: 0.6em;
-  }
-
-  .moon-icon {
-    font-size: 2.3rem;
-    filter: drop-shadow(0 0 10px #f6f6fa);
-    animation: moonGlow 2.5s infinite alternate;
-  }
-
-  @keyframes moonGlow {
-    0% { filter: drop-shadow(0 0 6px #f6f6fa); }
-    100% { filter: drop-shadow(0 0 24px #f6f6fa); }
-  }
-
-  /* ===== HERO SECTION ===== */
-  .hero {
-    text-align: center;
-    margin: 3.5rem 0 2rem 0;
-    padding: 0 2rem;
-    position: relative;
-  }
-
-  .hero h1 {
-    color: #f6f6fa;
-    font-size: 3.5rem;
-    margin-bottom: .5em;
-    text-shadow: 0 0 18px #8bb6f9, 0 0 4px #d3d3d6;
-    background: linear-gradient(90deg, #fff, #b6bcfa);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-weight: 800;
-  }
-
-  .hero p {
-    color: #d3d3d6;
-    font-size: 1.4rem;
-    margin-bottom: 2em;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-    line-height: 1.6;
-  }
-
-  /* ===== GAME CARDS ===== */
-  .games-section {
-    padding: 0 2rem 3rem 2rem;
-  }
-
-  .section-header {
-    text-align: center;
-    margin-bottom: 3rem;
-  }
-
-  .section-title {
-    font-size: 2.5rem;
-    color: #f6f6fa;
-    margin-bottom: 1rem;
-    background: linear-gradient(90deg, #fff, #b6bcfa);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .games-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    max-width: 1400px;
-    margin: 0 auto;
-  }
-
-  .game-card {
-    background: linear-gradient(135deg, #23232e 0%, #252535 100%);
-    border-radius: 20px;
-    box-shadow: 0 8px 32px #0005;
-    padding: 2.5rem 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border: 1px solid rgba(255,255,255,0.1);
-    text-align: center;
-  }
-
-  .game-icon {
-    font-size: 4rem;
-    margin-bottom: 1.5rem;
-    filter: drop-shadow(0 0 10px #b6bcfa);
-  }
-
-  .game-title {
-    color: #f6f6fa;
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 0.7em;
-  }
-
-  .play-btn {
-    background: linear-gradient(45deg, #8bb6f9, #b6bcfa);
-    color: #f6f6fa;
-    padding: 1rem 2rem;
-    border: none;
-    border-radius: 2em;
-    font-size: 1.1rem;
-    font-weight: 700;
-    cursor: pointer;
-    width: 100%;
-    max-width: 200px;
-  }
-
-  /* ===== FOOTER ===== */
-  footer {
-    background: linear-gradient(135deg, #191924 0%, #232335 100%);
-    color: #d3d3d6;
-    text-align: center;
-    padding: 3rem 0 2rem 0;
-    border-top: 1px solid rgba(255,255,255,0.1);
-  }
-
-  /* ===== ABUSE TIMER STYLES ===== */
-  .abuse-timer {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.95);
-    color: white;
-    padding: 3rem 4rem;
-    border-radius: 25px;
-    box-shadow: 0 0 60px rgba(255, 0, 0, 0.5);
-    z-index: 9999;
-    text-align: center;
-    font-size: 3rem;
-    font-weight: bold;
-    border: 4px solid #ff4747;
-    animation: pulse-red 1.5s infinite;
-    min-width: 300px;
-  }
-
-  .timer-title {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    color: #ff6b6b;
-  }
-
-  .timer-time {
-    font-size: 4rem;
-    font-family: 'Courier New', monospace;
-    margin-bottom: 1rem;
-    text-shadow: 0 0 20px #ff4747;
-  }
-
-  .next-event {
-    font-size: 1.2rem;
-    color: #8bb6f9;
-    margin-top: 1rem;
-  }
-
-  @keyframes pulse-red {
-    0%, 100% { 
-      box-shadow: 0 0 30px rgba(255, 71, 71, 0.6);
-      border-color: #ff4747;
-    }
-    50% { 
-      box-shadow: 0 0 60px rgba(255, 71, 71, 0.9);
-      border-color: #ff6b6b;
-    }
-  }
-
-  /* ===== DISCO MODE ===== */
-  .disco-mode {
-    animation: discoBackground 0.3s infinite !important;
-  }
-
-  @keyframes discoBackground {
-    0% { background: linear-gradient(45deg, #ff0000, #00ff00) !important; }
-    25% { background: linear-gradient(45deg, #0000ff, #ffff00) !important; }
-    50% { background: linear-gradient(45deg, #ff00ff, #00ffff) !important; }
-    75% { background: linear-gradient(45deg, #ff9900, #9900ff) !important; }
-    100% { background: linear-gradient(45deg, #00ff99, #ff0099) !important; }
-  }
-
-  /* ===== GLITCH MODE ===== */
-  .glitch-mode * {
-    animation: glitch 0.3s infinite !important;
-  }
-
-  @keyframes glitch {
-    0% { transform: translate(0); }
-    20% { transform: translate(-2px, 2px); }
-    40% { transform: translate(-2px, -2px); }
-    60% { transform: translate(2px, 2px); }
-    80% { transform: translate(2px, -2px); }
-    100% { transform: translate(0); }
-  }
-
-  /* ===== SHAKE MODE ===== */
-  .shake-mode {
-    animation: shake 0.5s infinite !important;
-  }
-
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-10px); }
-    75% { transform: translateX(10px); }
-  }
-
-  /* ===== EVENT NOTIFICATION ===== */
-  .event-notification {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.95);
-    color: white;
-    padding: 2rem 3rem;
-    border-radius: 20px;
-    box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
-    z-index: 10000;
-    text-align: center;
-    font-size: 2.5rem;
-    font-weight: bold;
-    border: 3px solid gold;
-    animation: pulse-gold 1s infinite;
-  }
-
-  @keyframes pulse-gold {
-    0%, 100% { 
-      box-shadow: 0 0 30px gold;
-      transform: translate(-50%, -50%) scale(1);
-    }
-    50% { 
-      box-shadow: 0 0 60px gold;
-      transform: translate(-50%, -50%) scale(1.05);
-    }
-  }
-
-  /* ===== GLOBAL NOTIFICATION ===== */
-  .global-notification {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: linear-gradient(45deg, #8bb6f9, #b6bcfa);
-    color: white;
-    padding: 1rem 2rem;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-    z-index: 10001;
-    animation: fadeInDown 0.3s ease;
-    max-width: 500px;
-    text-align: center;
-    font-weight: 500;
-  }
-
-  @keyframes fadeInDown {
-    from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-    to { opacity: 1; transform: translateX(-50%) translateY(0); }
-  }
-
-  /* ===== DIAMOND COUNTER ===== */
-  .diamond-counter {
-    font-size: 1.3em;
-    color: #22f2ff;
-    font-weight: bold;
-    text-shadow: 0 0 8px rgba(34, 242, 255, 0.5);
-    background: rgba(34, 242, 255, 0.1);
-    padding: 0.5em 1em;
-    border-radius: 2em;
-    border: 1px solid rgba(34, 242, 255, 0.3);
-  }
-
-  /* ===== ACHIEVEMENT BUTTON ===== */
-  .achieve-btn {
-    background: #7de2fc;
-    color: #0f0f13;
-    font-size: 1.15rem;
-    font-weight: 700;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    box-shadow: 0 4px 16px #0003;
-    cursor: pointer;
-    border: none;
-    margin-left: 0.8em;
-  }
-  </style>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
+  <!-- Star Background -->
+  <div class="stars" id="stars-container"></div>
+  
+  <!-- Floating Asteroids -->
+  <div id="asteroids-container"></div>
+  
   <!-- Loader -->
   <div id="loader-bg">
     <div class="moon-loader"></div>
-    <div class="loading-text" id="loading-text">Загрузка лунного приключения...</div>
+    <div class="loading-text" id="loading-text">Loading lunar adventure...</div>
   </div>
-
-  <!-- Abuse Timer -->
-  <div class="abuse-timer" id="abuse-timer" style="display: none;">
-    <div class="timer-title">🚨 АДМИН АБЬЮЗ АКТИВИРОВАН 🚨</div>
-    <div class="timer-time" id="timer-time">10:00</div>
-    <div class="next-event" id="next-event">Следующий ивент через: 2:00</div>
-  </div>
-
-  <!-- Event Notification -->
-  <div class="event-notification" id="event-notification" style="display: none;"></div>
-
+  
+  <!-- Site Timer -->
+  <div class="site-timer" id="site-timer" style="display: none;"></div>
+  
   <!-- Global Notification -->
   <div class="global-notification" id="global-notification" style="display: none;"></div>
-
+  
+  <!-- Meteor Shower -->
+  <div class="meteor-shower" id="meteor-shower"></div>
+  
+  <!-- Global Timer -->
+  <div class="global-timer" id="global-timer" style="display: none;"></div>
+  
+  <!-- Beta Test Animation Elements -->
+  <div class="lag-effect" id="lag-effect" style="display: none;"></div>
+  <div class="blue-screen" id="blue-screen" style="display: none;">
+    <div class="blue-screen-text" id="blue-screen-text"></div>
+  </div>
+  <div class="beta-test-overlay" id="beta-test-overlay" style="display: none;">
+    <div class="beta-test-text">Welcome to Beta Test!</div>
+  </div>
+  
+  <!-- New Animation Elements -->
+  <div class="confetti-container" id="confetti-container" style="display: none;"></div>
+  <div class="fireworks-container" id="fireworks-container" style="display: none;"></div>
+  
   <div class="navbar">
-    <span class="logo">
+    <span class="logo" id="moon-logo">
       <span class="moon-icon">🌑</span>
       Akkro Games
+      <span class="logo-hint" id="logo-hint"></span>
     </span>
-    <span class="diamond-counter" id="diamond-counter">💎 0</span>
+    
+    <div class="language-switcher">
+      <button class="language-btn active" data-lang="en">
+        <i class="fas fa-globe"></i>
+        EN
+      </button>
+      <button class="language-btn" data-lang="ru">
+        <i class="fas fa-globe"></i>
+        RU
+      </button>
+      <button class="language-btn" data-lang="es">
+        <i class="fas fa-globe"></i>
+        ES
+      </button>
+    </div>
+    
+    <div class="account-section">
+      <button class="account-btn" id="account-btn" title="Account">
+        <i class="fas fa-user"></i>
+      </button>
+      <div class="account-menu" id="account-menu">
+        <div class="account-info">
+          <div class="account-avatar" id="account-avatar">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="account-details">
+            <div class="account-username" id="account-username">Guest</div>
+            <div class="account-email" id="account-email">Enter your account</div>
+            <div id="premium-badge" style="display: none;">
+              <span class="account-premium-badge">PREMIUM</span>
+            </div>
+            <div id="admin-badge" style="display: none;">
+              <span class="account-admin-badge">ADMIN</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="account-stats">
+          <div class="account-stat">
+            <div class="account-stat-value" id="stat-diamonds">0</div>
+            <div class="account-stat-label">Diamonds</div>
+          </div>
+          <div class="account-stat">
+            <div class="account-stat-value" id="stat-achievements">0</div>
+            <div class="account-stat-label">Achievements</div>
+          </div>
+        </div>
+        
+        <div class="account-actions" id="account-actions">
+          <button class="account-action-btn" id="login-action-btn">
+            <i class="fas fa-sign-in-alt"></i>
+            Login
+          </button>
+          <button class="account-action-btn" id="register-action-btn">
+            <i class="fas fa-user-plus"></i>
+            Register
+          </button>
+        </div>
+        <div class="account-actions" id="user-actions" style="display: none;">
+          <button class="account-action-btn" id="profile-action-btn">
+            <i class="fas fa-user-circle"></i>
+            Profile
+          </button>
+          <button class="account-action-btn" id="premium-action-btn">
+            <i class="fas fa-crown"></i>
+            Premium
+          </button>
+          <button class="account-action-btn" id="admin-panel-btn" style="display: none;">
+            <i class="fas fa-tools"></i>
+            Admin Panel
+          </button>
+          <button class="account-action-btn" id="logout-action-btn">
+            <i class="fas fa-sign-out-alt"></i>
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
-
-  <section class="hero">
-    <h1>Welcome to Akkro Games</h1>
-    <p>The best games under moonlight - for you! Experience the magic and find surprises 🌑✨</p>
+  
+  <!-- Auth Modal -->
+  <div class="achievements-page" id="auth-page" style="display:none;">
+    <div class="auth-form-container">
+      <button class="achieve-close" id="auth-close" title="Close">×</button>
+      
+      <div class="auth-header">
+        <h2 class="auth-title">Welcome</h2>
+        <p class="auth-subtitle">Join the lunar adventure</p>
+      </div>
+      
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="login-tab">Login</button>
+        <button class="auth-tab" id="register-tab">Register</button>
+      </div>
+      
+      <form class="auth-form active" id="login-form">
+        <div class="form-group">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="Enter password" required>
+          <button type="button" class="password-toggle" id="login-password-toggle">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <button type="submit" class="auth-submit-btn">Login to Account</button>
+        
+        <div class="auth-divider">
+          <span>or login with</span>
+        </div>
+        
+        <div class="social-auth">
+          <button type="button" class="google-auth-btn" id="google-login-btn">
+            <i class="fab fa-google"></i>
+            Login with Google
+          </button>
+        </div>
+      </form>
+      
+      <form class="auth-form" id="register-form">
+        <div class="form-group">
+          <label for="register-username">Username</label>
+          <input type="text" id="register-username" placeholder="Create username" required>
+        </div>
+        <div class="form-group">
+          <label for="register-email">Email</label>
+          <input type="email" id="register-email" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+          <label for="register-password">Password</label>
+          <input type="password" id="register-password" placeholder="Create password" required>
+          <button type="button" class="password-toggle" id="register-password-toggle">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="form-group">
+          <label for="register-confirm">Confirm Password</label>
+          <input type="password" id="register-confirm" placeholder="Repeat password" required>
+        </div>
+        <button type="submit" class="auth-submit-btn">Create Account</button>
+        
+        <div class="auth-divider">
+          <span>or register with</span>
+        </div>
+        
+        <div class="social-auth">
+          <button type="button" class="google-auth-btn" id="google-register-btn">
+            <i class="fab fa-google"></i>
+            Register with Google
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <section class="hero" id="main-hero">
+    <div class="hero-bg"></div>
+    <h1 id="hero-title">Welcome to Akkro Games</h1>
+    <p id="hero-subtitle">The best games under moonlight - for you! Experience the magic and find surprises 🌑✨</p>
+    
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-value" id="hero-games">3+</div>
+        <div class="hero-stat-label" id="hero-games-label">Available Games</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-value" id="hero-players">0</div>
+        <div class="hero-stat-label" id="hero-players-label">Active Players</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-value" id="hero-achievements">15+</div>
+        <div class="hero-stat-label" id="hero-achievements-label">Total Achievements</div>
+      </div>
+    </div>
   </section>
-
+  
   <section class="games-section">
     <div class="section-header">
-      <h2 class="section-title">Our Games</h2>
-      <p class="section-subtitle">Choose a game and embark on a space adventure</p>
+      <h2 class="section-title" id="games-title">Our Games</h2>
+      <p class="section-subtitle" id="games-subtitle">Choose a game and embark on a space adventure</p>
     </div>
-    <div class="games-list" id="games-list">
-      <!-- Games will be loaded here -->
-    </div>
+    <div class="games-list" id="games-list"></div>
   </section>
-
+  
   <footer>
     <div class="footer-content">
+      <div class="footer-links">
+        <a href="#" class="footer-link" id="about-link">About Us</a>
+        <a href="#" class="footer-link" id="support-link">Support</a>
+        <a href="#" class="footer-link" id="privacy-link">Privacy Policy</a>
+        <a href="#" class="footer-link" id="terms-link">Terms of Use</a>
+        <a href="#" class="footer-link" id="contacts-link">Contacts</a>
+      </div>
+      <span class="version" id="version-text">Site Version: v4.1.0</span>
       <button class="achieve-btn" id="achieve-btn" title="Achievements">🏆</button>
-      <span class="version">Site Version: v4.1.0 ABUSE MODE</span>
+      <span class="diamond-counter" id="diamond-counter">💎 0</span>
+      <button class="shop-btn" id="shop-btn" style="margin-left:1em;">Change Design</button>
+      <button class="promo-btn" id="promo-btn">Promocodes</button>
     </div>
   </footer>
-
-  <script>
-  // ===== ADMIN ABUSE SYSTEM =====
-  let abuseTimer = null;
-  let eventTimer = null;
-  let abuseTimeLeft = 600; // 10 minutes
-  let nextEventIn = 120; // 2 minutes
-  let currentEvent = null;
-  let isAbuseActive = false;
-
-  const abuseEvents = [
-    {
-      id: 'disco',
-      name: '💃 ДИСКО-РЕЖИМ! 🕺',
-      description: 'Сайт превратился в дискотеку! Цвета меняются как сумасшедшие!',
-      execute: startDiscoMode,
-      duration: 30000,
-      end: endDiscoMode
-    },
-    {
-      id: 'diamonds5',
-      name: '💎 АЛМАЗНЫЙ ДОЖДЬ!',
-      description: 'Вы получаете +5 алмазов! Бонус за выживание!',
-      execute: giveDiamonds5,
-      duration: 5000
-    },
-    {
-      id: 'glitch',
-      name: '🔄 ГЛИЧ-АТАКА!',
-      description: 'Интерфейс глючит! Ничего не понимаю!',
-      execute: startGlitchMode,
-      duration: 25000,
-      end: endGlitchMode
-    },
-    {
-      id: 'diamonds3', 
-      name: '✨ БОНУСНЫЕ АЛМАЗЫ!',
-      description: 'Еще +3 алмаза в вашу коллекцию!',
-      execute: giveDiamonds3,
-      duration: 5000
-    },
-    {
-      id: 'shake',
-      name: '🌪️ ЗЕМЛЕТРЯСЕНИЕ!',
-      description: 'Сайт трясется! Держитесь крепче!',
-      execute: startShakeMode,
-      duration: 20000,
-      end: endShakeMode
-    },
-    {
-      id: 'everything',
-      name: '💥 ВСЁ СРАЗУ! АПОКАЛИПСИС!',
-      description: 'ВСЕ ИВЕНТЫ ОДНОВРЕМЕННО! ВЫЖИВИТЕ ЛИ ВЫ?!',
-      execute: startEverythingEvent,
-      duration: 40000,
-      end: endEverythingEvent
-    }
-  ];
-
-  // Initialize when page loads
-  window.addEventListener('load', () => {
-    const loader = document.getElementById('loader-bg');
-    const loadingText = document.getElementById('loading-text');
-    
-    const steps = [
-      "Загрузка лунного приключения...",
-      "Инициализация игр...",
-      "Настройка интерфейса...",
-      "Подготовка достижений...",
-      "Почти готово...",
-      "АКТИВАЦИЯ АДМИН-АБЬЮЗА! 🚨"
-    ];
-    
-    let currentStep = 0;
-    const interval = setInterval(() => {
-      if (currentStep < steps.length) {
-        loadingText.textContent = steps[currentStep];
-        currentStep++;
-      } else {
-        clearInterval(interval);
-        setTimeout(() => {
-          loader.classList.add('loaded');
-          initializeSite();
-        }, 1000);
-      }
-    }, 600);
-  });
-
-  function initializeSite() {
-    renderGames();
-    setDiamonds(getDiamonds());
-    
-    // Start admin abuse after 3 seconds
-    setTimeout(() => {
-      startAdminAbuse();
-    }, 3000);
-  }
-
-  function startAdminAbuse() {
-    if (isAbuseActive) return;
-    
-    isAbuseActive = true;
-    
-    // Show the abuse timer
-    const abuseTimerElement = document.getElementById('abuse-timer');
-    abuseTimerElement.style.display = 'block';
-    
-    // Show big notification
-    showEventNotification('🚨 АДМИН-АБЬЮЗ АКТИВИРОВАН! 🚨\n10 минут до апокалипсиса!');
-    
-    // Start main timer
-    abuseTimer = setInterval(() => {
-      abuseTimeLeft--;
-      updateTimerDisplay();
-      
-      // Update next event counter
-      nextEventIn--;
-      if (nextEventIn <= 0) {
-        triggerRandomEvent();
-        nextEventIn = 120; // Reset to 2 minutes
-      }
-      
-      // Update next event display
-      document.getElementById('next-event').textContent = 
-        `Следующий ивент через: ${Math.floor(nextEventIn/60)}:${(nextEventIn%60).toString().padStart(2, '0')}`;
-      
-      // End abuse when time is up
-      if (abuseTimeLeft <= 0) {
-        endAdminAbuse();
-      }
-    }, 1000);
-    
-    // Trigger first event immediately
-    setTimeout(() => {
-      triggerRandomEvent();
-    }, 5000);
-  }
-
-  function updateTimerDisplay() {
-    const minutes = Math.floor(abuseTimeLeft / 60);
-    const seconds = abuseTimeLeft % 60;
-    document.getElementById('timer-time').textContent = 
-      `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-  }
-
-  function triggerRandomEvent() {
-    const availableEvents = abuseEvents.filter(event => event.id !== currentEvent?.id);
-    const randomEvent = availableEvents[Math.floor(Math.random() * availableEvents.length)];
-    
-    currentEvent = randomEvent;
-    
-    // Show event notification
-    showEventNotification(randomEvent.description);
-    
-    // Execute the event
-    randomEvent.execute();
-    
-    // End event after duration
-    setTimeout(() => {
-      if (randomEvent.end) {
-        randomEvent.end();
-      }
-      currentEvent = null;
-      showNotification(`Ивент "${randomEvent.name}" завершен!`);
-    }, randomEvent.duration);
-  }
-
-  // Event functions
-  function startDiscoMode() {
-    document.body.classList.add('disco-mode');
-    showNotification('💃 ДИСКО-РЕЖИМ АКТИВИРОВАН! 🕺', 'disco');
-  }
-
-  function endDiscoMode() {
-    document.body.classList.remove('disco-mode');
-  }
-
-  function startGlitchMode() {
-    document.body.classList.add('glitch-mode');
-    showNotification('🔄 ГЛИЧ-АТАКА НАЧАЛАСЬ!', 'glitch');
-  }
-
-  function endGlitchMode() {
-    document.body.classList.remove('glitch-mode');
-  }
-
-  function startShakeMode() {
-    document.body.classList.add('shake-mode');
-    showNotification('🌪️ САЙТ ТРЯСЕТСЯ! ДЕРЖИТЕСЬ!', 'shake');
-  }
-
-  function endShakeMode() {
-    document.body.classList.remove('shake-mode');
-  }
-
-  function giveDiamonds5() {
-    setDiamonds(getDiamonds() + 5);
-    showNotification('🎉 +5 АЛМАЗОВ! ВАШ БОНУС!', 'diamonds');
-  }
-
-  function giveDiamonds3() {
-    setDiamonds(getDiamonds() + 3);
-    showNotification('✨ +3 АЛМАЗА! ПРОДОЛЖАЙТЕ В ТОМ ЖЕ ДУХЕ!', 'diamonds');
-  }
-
-  function startEverythingEvent() {
-    document.body.classList.add('disco-mode', 'glitch-mode', 'shake-mode');
-    giveDiamonds5();
-    giveDiamonds3();
-    showNotification('💥 АПОКАЛИПСИС! ВСЕ ИВЕНТЫ АКТИВИРОВАНЫ!', 'apocalypse');
-  }
-
-  function endEverythingEvent() {
-    document.body.classList.remove('disco-mode', 'glitch-mode', 'shake-mode');
-  }
-
-  function endAdminAbuse() {
-    clearInterval(abuseTimer);
-    if (eventTimer) clearInterval(eventTimer);
-    isAbuseActive = false;
-    
-    // Reset all effects
-    document.body.classList.remove('disco-mode', 'glitch-mode', 'shake-mode');
-    
-    // Show final message
-    showEventNotification('⏰ ВРЕМЯ ВЫШЛО! \nВЫ БУДЕТЕ ВЫКИНУТЫ ЧЕРЕЗ 5 СЕКУНД!');
-    
-    // Hide timer
-    setTimeout(() => {
-      document.getElementById('abuse-timer').style.display = 'none';
-    }, 2000);
-    
-    // Kick player after 5 seconds
-    setTimeout(() => {
-      kickPlayer();
-    }, 5000);
-  }
-
-  function kickPlayer() {
-    document.body.innerHTML = `
-      <div style="
-        background: linear-gradient(135deg, #1c1c2d 70%, #4c4c65 100%);
-        color: #fff;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        text-align: center;
-        padding: 2rem;
-        font-family: 'Segoe UI', Arial, sans-serif;
-      ">
-        <div style="font-size: 5em; margin-bottom: 0.5em;">🚪</div>
-        <div style="font-size: 4em; font-weight: bold; color: #ff4747; margin-bottom: 0.2em; text-shadow: 0 0 18px #fff7;">
-          ВРЕМЯ ВЫШЛО!
-        </div>
-        <div style="font-size: 1.22em; color: #fff; margin-bottom: 1.2em; max-width: 600px; line-height: 1.6;">
-          Вы были выкинуты с сайта по истечении таймера админ-абьюза.<br>
-          Страница перезагрузится через 5 секунд...
-        </div>
-        <button onclick="window.location.reload()" style="
-          background: linear-gradient(45deg, #8bb6f9, #b6bcfa);
-          color: white;
-          padding: 1rem 2rem;
-          border: none;
-          border-radius: 2em;
-          font-size: 1.1rem;
-          font-weight: 700;
-          cursor: pointer;
-        ">Перезагрузить сейчас</button>
-      </div>
-    `;
-    
-    setTimeout(() => {
-      window.location.reload();
-    }, 5000);
-  }
-
-  function showEventNotification(message) {
-    const notification = document.getElementById('event-notification');
-    notification.textContent = message;
-    notification.style.display = 'block';
-    
-    setTimeout(() => {
-      notification.style.display = 'none';
-    }, 4000);
-  }
-
-  function showNotification(message, type = 'info') {
-    const notification = document.getElementById('global-notification');
-    notification.textContent = message;
-    notification.style.display = 'block';
-    
-    // Different colors for different event types
-    if (type === 'disco') {
-      notification.style.background = 'linear-gradient(45deg, #ff00ff, #00ffff)';
-    } else if (type === 'glitch') {
-      notification.style.background = 'linear-gradient(45deg, #00ff00, #0000ff)';
-    } else if (type === 'shake') {
-      notification.style.background = 'linear-gradient(45deg, #ff9900, #ff0000)';
-    } else if (type === 'diamonds') {
-      notification.style.background = 'linear-gradient(45deg, #22f2ff, #228b22)';
-    } else if (type === 'apocalypse') {
-      notification.style.background = 'linear-gradient(45deg, #ff0000, #000000)';
-    }
-    
-    setTimeout(() => {
-      notification.style.display = 'none';
-    }, 3000);
-  }
-
-  // ===== GAMES SYSTEM =====
-  const games = [
-    { 
-      title: "Space Runner", 
-      path: "#", 
-      version: "v1.2.5",
-      description: "Run across space platforms and collect stars in this exciting arcade",
-      icon: "🚀",
-      available: true
-    },
-    { 
-      title: "Cube Adventure", 
-      path: "#", 
-      version: "v2.0.1",
-      description: "Solve puzzles and explore the mysterious cubic world",
-      icon: "🎮",
-      available: true
-    },
-    { 
-      title: "Puzzle Master", 
-      path: "#", 
-      version: "v1.8.3",
-      description: "Test your puzzle-solving skills in a space setting",
-      icon: "🧩",
-      available: true
-    }
-  ];
-
-  function renderGames() {
-    const gamesList = document.getElementById('games-list');
-    gamesList.innerHTML = games.map(game => `
-      <div class="game-card">
-        <div class="game-icon">${game.icon}</div>
-        <div class="game-title">${game.title}</div>
-        <div class="game-description">${game.description}</div>
-        <div class="game-meta">
-          <div class="game-version">${game.version}</div>
-        </div>
-        <button class="play-btn">Play Now</button>
-      </div>
-    `).join('');
-  }
-
-  // ===== DIAMONDS SYSTEM =====
-  function getDiamonds() {
-    return Number(localStorage.getItem('akkro_diamonds') || 0);
-  }
   
-  function setDiamonds(val) {
-    localStorage.setItem('akkro_diamonds', String(val));
-    document.getElementById('diamond-counter').textContent = "💎 " + val;
-  }
+  <div class="achievements-page" id="achievements-page" style="display:none;">
+    <div class="achievements-inner">
+      <button class="achieve-close" id="achieve-close" title="Close achievements">×</button>
+      <h2 style="color:#fff; font-size: 2.5rem; margin-bottom: 1rem;" id="achievements-title">Achievements</h2>
+      <p style="color: var(--moon-grey); margin-bottom: 2rem;" id="achievements-subtitle">Earn achievements and get rewards</p>
+      <div class="achieve-list" id="achieve-list"></div>
+    </div>
+  </div>
+  
+  <div class="achievements-page" id="shop-page" style="display:none;">
+    <div class="achievements-inner">
+      <button class="achieve-close" id="shop-close" title="Close shop">×</button>
+      <h2 style="color:#fff; font-size: 2.5rem; margin-bottom: 1rem;" id="shop-title">Design Shop</h2>
+      <p style="color: var(--moon-grey); margin-bottom: 2rem;" id="shop-subtitle">Change the appearance of the site with unique themes</p>
+      <div class="shop-designs" id="shop-designs"></div>
+    </div>
+  </div>
 
-  // Initialize diamonds
-  if (!localStorage.getItem('akkro_diamonds')) {
-    setDiamonds(10); // Start with 10 diamonds
-  } else {
-    setDiamonds(getDiamonds());
-  }
-
-  // Achievement button
-  document.getElementById('achieve-btn').addEventListener('click', () => {
-    const achieved = Math.floor(Math.random() * 15) + 1;
-    showNotification(`Достижения: ${achieved}/15 разблокировано!`, 'info');
-  });
-  </script>
+  <!-- Promocodes Page -->
+  <div class="achievements-page" id="promo-page" style="display:none;">
+    <div class="promo-form-container">
+      <button class="achieve-close" id="promo-close" title="Close promocodes">×</button>
+      
+      <div class="promo-header">
+        <h2 class="promo-title" id="promo-title">Promocodes</h2>
+        <p class="promo-subtitle" id="promo-subtitle">Enter promocode to get free diamonds</p>
+      </div>
+      
+      <div class="promo-input-group">
+        <input type="text" class="promo-input" id="promo-input" placeholder="Enter promocode" maxlength="20">
+      </div>
+      
+      <button class="promo-submit-btn" id="promo-submit-btn">Activate Promocode</button>
+      
+      <div class="social-promo-section">
+        <h3 class="social-promo-title" id="social-promo-title">Find active promocodes in our social networks</h3>
+        <p class="social-promo-description" id="social-promo-description">Join our community to get exclusive promocodes, participate in giveaways and be the first to know about new games and updates!</p>
+        
+        <div class="social-promo-buttons">
+          <a href="https://t.me/akkrogames" target="_blank" class="social-promo-btn telegram">
+            <i class="fab fa-telegram"></i>
+            <span id="telegram-btn-text">Telegram Channel</span>
+          </a>
+          <a href="https://discord.gg/akkrogames" target="_blank" class="social-promo-btn discord">
+            <i class="fab fa-discord"></i>
+            <span id="discord-btn-text">Discord Server</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Admin Panel -->
+  <div class="achievements-page" id="admin-page" style="display:none;">
+    <div class="admin-panel">
+      <button class="achieve-close" id="admin-close" title="Close admin panel">×</button>
+      
+      <div class="admin-header">
+        <h2 class="admin-title" id="admin-title">Admin Panel</h2>
+        <p class="admin-subtitle" id="admin-subtitle">Manage players and site features</p>
+      </div>
+      
+      <div class="admin-section">
+        <h3 class="admin-section-title">Global Actions</h3>
+        <div class="admin-buttons">
+          <button class="admin-btn success" id="give-3-diamonds">
+            <i class="fas fa-gem"></i>
+            Give All +3 Diamonds
+          </button>
+          <button class="admin-btn success" id="give-1-diamond">
+            <i class="fas fa-gem"></i>
+            Give All +1 Diamond
+          </button>
+          <button class="admin-btn" id="beta-test-btn">
+            <i class="fas fa-vial"></i>
+            Beta Test Animation
+          </button>
+          <button class="admin-btn" id="confetti-btn">
+            <i class="fas fa-birthday-cake"></i>
+            Confetti Animation
+          </button>
+          <button class="admin-btn" id="fireworks-btn">
+            <i class="fas fa-fire"></i>
+            Fireworks Animation
+          </button>
+          <button class="admin-btn" id="rainbow-text-btn">
+            <i class="fas fa-rainbow"></i>
+            Rainbow Text
+          </button>
+        </div>
+        
+        <div class="admin-input-group">
+          <input type="text" class="admin-input" id="global-message-input" placeholder="Enter global message">
+          <button class="admin-btn" id="send-global-message" style="margin-top: 1rem; width: 100%;">
+            <i class="fas fa-bullhorn"></i>
+            Send Global Message
+          </button>
+        </div>
+        
+        <div class="admin-input-group">
+          <input type="number" class="admin-input" id="timer-input" placeholder="Timer in seconds">
+          <button class="admin-btn danger" id="start-timer" style="margin-top: 1rem; width: 100%;">
+            <i class="fas fa-clock"></i>
+            Start Timer
+          </button>
+        </div>
+        
+        <div class="admin-input-group">
+          <input type="number" class="admin-input" id="global-timer-input" placeholder="Global timer in seconds">
+          <button class="admin-btn" id="start-global-timer" style="margin-top: 1rem; width: 100%;">
+            <i class="fas fa-globe"></i>
+            Start Global Timer
+          </button>
+        </div>
+      </div>
+      
+      <div class="admin-section">
+        <h3 class="admin-section-title">Animation Effects</h3>
+        <div class="admin-buttons">
+          <button class="admin-btn" id="pulse-effect-btn">
+            <i class="fas fa-heartbeat"></i>
+            Pulse Effect
+          </button>
+          <button class="admin-btn" id="shake-effect-btn">
+            <i class="fas fa-exclamation"></i>
+            Shake Effect
+          </button>
+          <button class="admin-btn" id="spin-effect-btn">
+            <i class="fas fa-sync"></i>
+            Spin Effect
+          </button>
+          <button class="admin-btn" id="bounce-effect-btn">
+            <i class="fas fa-basketball-ball"></i>
+            Bounce Effect
+          </button>
+          <button class="admin-btn" id="flip-effect-btn">
+            <i class="fas fa-retweet"></i>
+            Flip Effect
+          </button>
+          <button class="admin-btn" id="zoom-effect-btn">
+            <i class="fas fa-search-plus"></i>
+            Zoom Effect
+          </button>
+        </div>
+        
+        <div class="admin-buttons">
+          <button class="admin-btn" id="slide-in-effect-btn">
+            <i class="fas fa-arrow-right"></i>
+            Slide In Effect
+          </button>
+          <button class="admin-btn" id="fade-in-effect-btn">
+            <i class="fas fa-eye"></i>
+            Fade In Effect
+          </button>
+          <button class="admin-btn" id="glitch-effect-btn">
+            <i class="fas fa-bug"></i>
+            Glitch Effect
+          </button>
+          <button class="admin-btn" id="neon-effect-btn">
+            <i class="fas fa-lightbulb"></i>
+            Neon Effect
+          </button>
+          <button class="admin-btn" id="typing-effect-btn">
+            <i class="fas fa-keyboard"></i>
+            Typing Effect
+          </button>
+          <button class="admin-btn" id="float-effect-btn">
+            <i class="fas fa-cloud"></i>
+            Float Effect
+          </button>
+        </div>
+        
+        <div class="admin-buttons">
+          <button class="admin-btn" id="jello-effect-btn">
+            <i class="fas fa-cube"></i>
+            Jello Effect
+          </button>
+          <button class="admin-btn" id="wobble-effect-btn">
+            <i class="fas fa-balance-scale"></i>
+            Wobble Effect
+          </button>
+          <button class="admin-btn" id="heartbeat-effect-btn">
+            <i class="fas fa-heart"></i>
+            Heartbeat Effect
+          </button>
+          <button class="admin-btn" id="rubberBand-effect-btn">
+            <i class="fas fa-expand"></i>
+            RubberBand Effect
+          </button>
+          <button class="admin-btn" id="tada-effect-btn">
+            <i class="fas fa-gift"></i>
+            Tada Effect
+          </button>
+          <button class="admin-btn" id="flash-effect-btn">
+            <i class="fas fa-bolt"></i>
+            Flash Effect
+          </button>
+        </div>
+      </div>
+      
+      <div class="admin-section">
+        <h3 class="admin-section-title">Players Management</h3>
+        <div class="players-list" id="players-list">
+          <!-- Players will be dynamically added here -->
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Info Pages -->
+  <div class="info-page" id="about-page" style="display:none;">
+    <div class="info-inner">
+      <button class="info-close" id="about-close" title="Close">×</button>
+      <h2 class="info-title" id="about-title">About Us</h2>
+      <div class="info-content" id="about-content">
+        <p>Welcome to Akkro Games - an innovative game studio creating unique gaming experiences for millions of players worldwide!</p>
+        
+        <p>Our team consists of talented developers, designers, and game designers who put their soul into every project. We strive to create games that not only entertain but also inspire, unite people, and leave unforgettable impressions.</p>
+        
+        <p>Founded in 2020, Akkro Games quickly gained recognition thanks to our unique approach to game development. We combine cutting-edge technologies with creative design to create products that stand out in the market.</p>
+        
+        <p>Our philosophy is simple: players always come first. We listen to our community's feedback and constantly work on improving our games to provide the best gaming experience.</p>
+        
+        <p>Among our projects, you'll find diverse genres - from exciting space adventures to complex puzzles. Each game is created with love and attention to detail.</p>
+        
+        <p>Join our growing community and discover the world of amazing gaming adventures from Akkro Games!</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="info-page" id="support-page" style="display:none;">
+    <div class="info-inner">
+      <button class="info-close" id="support-close" title="Close">×</button>
+      <h2 class="info-title" id="support-title">Support</h2>
+      <div class="info-content" id="support-content">
+        <p>We are always ready to help you with any questions or problems you may encounter when using our games or website.</p>
+        
+        <p>If you have technical issues, questions about gameplay, or suggestions for improvement, our support team is ready to assist you.</p>
+        
+        <p>Contact us by email:</p>
+        
+        <span class="email-address">akkrogames7@gmail.com</span>
+        
+        <p>We strive to respond to all requests within 24 hours. Please provide as much information about your problem as possible so we can help you faster.</p>
+        
+        <p>You can also find answers to frequently asked questions in our "Help" section or join our community on social media where other players can share their experiences.</p>
+        
+        <a href="mailto:akkrogames7@gmail.com" class="email-btn">Contact Support</a>
+      </div>
+    </div>
+  </div>
+  
+  <div class="info-page" id="privacy-page" style="display:none;">
+    <div class="info-inner">
+      <button class="info-close" id="privacy-close" title="Close">×</button>
+      <h2 class="info-title" id="privacy-title">Privacy Policy</h2>
+      <div class="info-content" id="privacy-content">
+        <p>Last updated: January 1, 2024</p>
+        
+        <p>At Akkro Games, we take our users' privacy seriously. This Privacy Policy describes how we collect, use, and protect your personal information.</p>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Information Collected</h3>
+        <p>We may collect the following information:</p>
+        <ul style="padding-left: 1.5rem;">
+          <li>Account information (username, email)</li>
+          <li>Game statistics and progress</li>
+          <li>Technical information (device type, OS version)</li>
+          <li>Usage data of our services</li>
+        </ul>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Use of Information</h3>
+        <p>We use collected information for:</p>
+        <ul style="padding-left: 1.5rem;">
+          <li>Providing and improving our services</li>
+          <li>Personalizing gaming experience</li>
+          <li>Processing transactions</li>
+          <li>Sending important notifications</li>
+        </ul>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Information Protection</h3>
+        <p>We take reasonable measures to protect your personal information from unauthorized access, alteration, disclosure, or destruction.</p>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Cookies</h3>
+        <p>We use cookies and similar technologies to track activity on our website and store certain information.</p>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Policy Changes</h3>
+        <p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page.</p>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Contact Us</h3>
+        <p>If you have questions about our Privacy Policy, please contact us: akkrogames7@gmail.com</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="info-page" id="terms-page" style="display:none;">
+    <div class="info-inner">
+      <button class="info-close" id="terms-close" title="Close">×</button>
+      <h2 class="info-title" id="terms-title">Terms of Use</h2>
+      <div class="info-content" id="terms-content">
+        <p>Welcome to Akkro Games! By using our games and website, you agree to these Terms of Use.</p>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Respectful Use</h3>
+        <p>We encourage all users to respect our work and other players. This website and all games were created with great love and soul investment by our development team.</p>
+        
+        <p style="background: rgba(139, 182, 249, 0.1); padding: 1.5rem; border-radius: 12px; border-left: 4px solid var(--accent);">
+          <strong>Special request:</strong><br>
+          Please do not attempt to conduct DDoS attacks on our website, do not hack our systems, and do not use cheats in games. Such actions not only disrupt the service for other users but also harm our team, which has invested a lot of time and effort into creating this project.
+        </p>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Code of Conduct</h3>
+        <p>When using our services, you agree:</p>
+        <ul style="padding-left: 1.5rem;">
+          <li>Not to disrupt the operation of our services</li>
+          <li>Not to use exploits, cheats, or mods that provide unfair advantage</li>
+          <li>Not to conduct any form of cyber attacks on our infrastructure</li>
+          <li>To respect other players and members of our team</li>
+          <li>To comply with all applicable laws and regulations</li>
+        </ul>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Intellectual Property</h3>
+        <p>All games, content, graphics, code, and other materials on this site are the intellectual property of Akkro Games and are protected by copyright laws.</p>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Access Termination</h3>
+        <p>We reserve the right to restrict or terminate your access to our services in case of violation of these Terms of Use.</p>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Terms Changes</h3>
+        <p>We may update these Terms of Use from time to time. By continuing to use our services after such changes, you agree to the revised terms.</p>
+        
+        <p>Thank you for your understanding and respectful attitude towards our work!</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="info-page" id="contacts-page" style="display:none;">
+    <div class="info-inner">
+      <button class="info-close" id="contacts-close" title="Close">×</button>
+      <h2 class="info-title" id="contacts-title">Contacts</h2>
+      <div class="info-content" id="contacts-content">
+        <p>We're always happy to hear from our players! If you have questions, suggestions, or just want to share your opinion about our games, don't hesitate to contact us.</p>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Email</h3>
+        <p>For all questions related to our games, technical support, cooperation, or media inquiries, you can write to us:</p>
+        
+        <span class="email-address">akkrogames7@gmail.com</span>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Social Media</h3>
+        <p>Follow our updates and join the Akkro Games community on social media:</p>
+        <ul style="padding-left: 1.5rem;">
+          <li>Twitter: @AkkroGames</li>
+          <li>Instagram: @akkrogames</li>
+          <li>Discord: Our community server</li>
+        </ul>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Response Time</h3>
+        <p>We strive to respond to all messages within 24-48 hours. For urgent questions, please indicate "URGENT" in the subject line.</p>
+        
+        <h3 style="color: var(--accent); margin-top: 1.5rem;">Cooperation</h3>
+        <p>If you're interested in cooperating with Akkro Games (partnership, publishing, media), please indicate "COOPERATION" in the subject line.</p>
+        
+        <a href="mailto:akkrogames7@gmail.com" class="email-btn">Contact Us</a>
+      </div>
+    </div>
+  </div>
+  
+  <script src="script.js"></script>
 </body>
 </html>
+
