@@ -1,4 +1,3 @@
-
 // ===== LANGUAGE SYSTEM =====
 const translations = {
   en: {
@@ -201,7 +200,7 @@ const translations = {
     
     // Games section
     games: "Nuestros Juegos",
-    gamesSubtitle: "Elige un juego и embárcate en una aventura espacial",
+    gamesSubtitle: "Elige un juego y embárcate en una aventura espacial",
     playNow: "Jugar Ahora",
     inDevelopment: "En Desarrollo",
     version: "Versión del Sitio",
@@ -485,10 +484,33 @@ function createAsteroids() {
   }
 }
 
+// ===== HALLOWEEN PUMPKINS =====
+function createPumpkins() {
+  const pumpkinsContainer = document.getElementById('pumpkins-container');
+  const pumpkinCount = 6;
+  
+  for (let i = 0; i < pumpkinCount; i++) {
+    const pumpkin = document.createElement('div');
+    pumpkin.classList.add('pumpkin');
+    pumpkin.innerHTML = '🎃';
+    
+    const size = 25 + Math.random() * 35;
+    const delay = Math.random() * 25;
+    const duration = 20 + Math.random() * 30;
+    
+    pumpkin.style.fontSize = `${size}px`;
+    pumpkin.style.animationDelay = `${delay}s`;
+    pumpkin.style.animationDuration = `${duration}s`;
+    
+    pumpkinsContainer.appendChild(pumpkin);
+  }
+}
+
 // ===== ENHANCED LOADER =====
 window.addEventListener('load', () => {
   createStars();
   createAsteroids();
+  createPumpkins();
   
   const loader = document.getElementById('loader-bg');
   const loadingText = document.getElementById('loading-text');
@@ -1068,7 +1090,11 @@ const promoCodes = [
   { code: "AKKROGAMES", reward: 5, description: "Galaxy Gift" },
   { code: "11/1/25", reward: 7, description: "Cosmic Surprise" },
   { code: "FREE", reward: 5, description: "Space Bonus" },
-  { code: "ADMIN123123", reward: 0, description: "Admin Access", isAdminCode: true }
+  { code: "ADMIN123123", reward: 0, description: "Admin Access", isAdminCode: true },
+  // NEW HALLOWEEN PROMOCODES
+  { code: "HALLOWEEN", reward: 10, description: "Halloween Special" },
+  { code: "THEMESHOPUPDATE", reward: 5, description: "Theme Shop Update" },
+  { code: "PUMPKIN", reward: 3, description: "Pumpkin Surprise" }
 ];
 
 const promoBtn = document.getElementById('promo-btn');
@@ -2567,6 +2593,15 @@ const shopDesigns = [
     animated: true 
   },
   { 
+    key: "halloween", 
+    name: "Halloween", 
+    price: 45, 
+    css: "body{background:linear-gradient(135deg, #1a0f0f, #2a1a1a, #3a2a2a, #4a3a3a)!important;background-size:400% 400%!important;animation:halloweenShift 10s ease infinite!important;position:relative!important;overflow:hidden!important;}body::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(45deg, transparent 40%, rgba(255, 117, 24, 0.1) 50%, transparent 60%);animation:halloweenShine 3s infinite;}", 
+    preview: "🎃", 
+    description: "Spooky Halloween theme with orange glow",
+    animated: true 
+  },
+  { 
     key: "premium", 
     name: "Premium", 
     price: 100, 
@@ -2655,6 +2690,7 @@ function renderShop() {
   let bought = getBoughtDesigns();
   let active = getActiveDesign();
   
+  // Render regular themes
   shopDesigns.forEach(d=>{
     let isBought = bought.includes(d.key);
     let isOnSale = currentSale && currentSale.themeKey === d.key;
@@ -2690,6 +2726,69 @@ function renderShop() {
       </div>
     `;
   });
+  
+  // Add Halloween Mega Bundles
+  shopDesignsDiv.innerHTML += `
+    <div class="mega-bundle">
+      <div class="bundle-header">
+        <div class="bundle-icon">🎃</div>
+        <div>
+          <div class="bundle-title">Halloween Mega Bundle</div>
+          <div class="bundle-description">Get 4 random themes at a special price!</div>
+        </div>
+      </div>
+      <div class="bundle-features">
+        <div class="bundle-feature">
+          <div class="bundle-feature-icon">🎁</div>
+          <div class="bundle-feature-text">4 Random Themes</div>
+        </div>
+        <div class="bundle-feature">
+          <div class="bundle-feature-icon">💎</div>
+          <div class="bundle-feature-text">Save up to 50%</div>
+        </div>
+        <div class="bundle-feature">
+          <div class="bundle-feature-icon">✨</div>
+          <div class="bundle-feature-text">Exclusive Halloween Theme</div>
+        </div>
+      </div>
+      <div class="bundle-price">50 💎</div>
+      <button class="bundle-buy" onclick="window.buyMegaBundle(50, 4)" ${getDiamonds() < 50 ? "disabled" : ""}>
+        Buy Halloween Bundle
+      </button>
+    </div>
+    
+    <div class="mega-bundle">
+      <div class="bundle-header">
+        <div class="bundle-icon">👻</div>
+        <div>
+          <div class="bundle-title">Ultimate Halloween Bundle</div>
+          <div class="bundle-description">Get 6 random themes including exclusive ones!</div>
+        </div>
+      </div>
+      <div class="bundle-features">
+        <div class="bundle-feature">
+          <div class="bundle-feature-icon">🎁</div>
+          <div class="bundle-feature-text">6 Random Themes</div>
+        </div>
+        <div class="bundle-feature">
+          <div class="bundle-feature-icon">💎</div>
+          <div class="bundle-feature-text">Save up to 60%</div>
+        </div>
+        <div class="bundle-feature">
+          <div class="bundle-feature-icon">👑</div>
+          <div class="bundle-feature-text">Higher chance for premium</div>
+        </div>
+        <div class="bundle-feature">
+          <div class="bundle-feature-icon">✨</div>
+          <div class="bundle-feature-text">Guaranteed Halloween Theme</div>
+        </div>
+      </div>
+      <div class="bundle-price">100 💎</div>
+      <button class="bundle-buy" onclick="window.buyMegaBundle(100, 6)" ${getDiamonds() < 100 ? "disabled" : ""}>
+        Buy Ultimate Bundle
+      </button>
+    </div>
+  `;
   
   if (currentSale) {
     const saleTheme = shopDesigns.find(d => d.key === currentSale.themeKey);
@@ -2741,6 +2840,52 @@ window.buyDesign = function(key) {
     showNotification(`Theme "${d.name}" successfully purchased!`, 'success');
   } else {
     showNotification('Not enough diamonds to purchase', 'error');
+  }
+}
+
+// Mega Bundle purchase function
+window.buyMegaBundle = function(price, themeCount) {
+  if(getDiamonds() >= price) {
+    setDiamonds(getDiamonds() - price);
+    
+    let bought = getBoughtDesigns();
+    let availableThemes = shopDesigns.filter(theme => 
+      theme.key !== 'default' && 
+      theme.key !== 'premium' && 
+      !bought.includes(theme.key)
+    );
+    
+    // If not enough available themes, include some already bought ones
+    if (availableThemes.length < themeCount) {
+      availableThemes = shopDesigns.filter(theme => theme.key !== 'default' && theme.key !== 'premium');
+    }
+    
+    // Shuffle and pick random themes
+    let shuffled = [...availableThemes].sort(() => 0.5 - Math.random());
+    let selectedThemes = shuffled.slice(0, themeCount);
+    
+    // Ensure Halloween theme is included in the ultimate bundle
+    if (price === 100) {
+      const halloweenTheme = shopDesigns.find(theme => theme.key === 'halloween');
+      if (halloweenTheme && !selectedThemes.includes(halloweenTheme)) {
+        selectedThemes[selectedThemes.length - 1] = halloweenTheme;
+      }
+    }
+    
+    // Unlock the selected themes
+    selectedThemes.forEach(theme => {
+      if (!bought.includes(theme.key)) {
+        bought.push(theme.key);
+        showNotification(`Unlocked: ${theme.name}`, 'success');
+      }
+    });
+    
+    setBoughtDesigns(bought);
+    renderShop();
+    
+    showNotification(`🎉 Mega Bundle purchased! You unlocked ${themeCount} themes!`, 'success');
+  } else {
+    showNotification('Not enough diamonds to purchase the bundle', 'error');
   }
 }
 
@@ -2860,4 +3005,3 @@ googleLoginBtn.addEventListener('click', () => {
 googleRegisterBtn.addEventListener('click', () => {
   showNotification('Google registration temporarily unavailable. Please use regular registration.', 'info');
 });
-
